@@ -1,0 +1,23 @@
+{
+    "name": "pandaac/exporter",
+    "keywords": ["pandaac", "exporter", "tibia", "opentibia"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christopher Eklund",
+            "email": "eklundchristopher@gmail.com",
+            "homepage": "https://eklundchristopher.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "ext-libxml": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "pandaac\\Exporter\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
