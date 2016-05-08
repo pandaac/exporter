@@ -196,6 +196,38 @@ $response = $amazon->export([
 }
 ```
 
+### Parse the monsters.xml file excluding individual monster files
+```php
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Parsers\Monsters;
+
+$monsters = new Exporter(
+  new Parsers\Monsters('./monsters/monsters.xml')
+);
+
+$monsters->getParser()->disableRecursion();
+
+$response = $monsters->export();
+```
+```json
+[
+  {
+    "name": "Amazon",
+    "file": "/Users/eklundchristopher/Documents/monsters/Amazons/amazon.xml"
+  },
+  {
+    "name": "Valkyrie",
+    "file": "/Users/eklundchristopher/Documents/monsters/Amazons/valkyrie.xml"
+  },
+  {
+    "name": "Carrion Worm",
+    "file": "/Users/eklundchristopher/Documents/monsters/Annelids/carrion worm.xml"
+  },
+  
+  ...
+]
+```
+
 ### Parse the monsters.xml file including individual monster files
 ```php
 use pandaac\Exporter\Exporter;
@@ -245,38 +277,6 @@ $response = $monsters->export([
     "manacost": 380,
   },
 
-  ...
-]
-```
-
-### Parse the monsters.xml file excluding individual monster files
-```php
-use pandaac\Exporter\Exporter;
-use pandaac\Exporter\Parsers\Monsters;
-
-$monsters = new Exporter(
-  new Parsers\Monsters('./monsters/monsters.xml')
-);
-
-$monsters->getParser()->disableRecursion();
-
-$response = $monsters->export();
-```
-```json
-[
-  {
-    "name": "Amazon",
-    "file": "/Users/eklundchristopher/Documents/monsters/Amazons/amazon.xml"
-  },
-  {
-    "name": "Valkyrie",
-    "file": "/Users/eklundchristopher/Documents/monsters/Amazons/valkyrie.xml"
-  },
-  {
-    "name": "Carrion Worm",
-    "file": "/Users/eklundchristopher/Documents/monsters/Annelids/carrion worm.xml"
-  },
-  
   ...
 ]
 ```
