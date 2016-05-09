@@ -1,4 +1,4 @@
-# pandaac Exporter
+# Exporter
 The aim of the pandaac exporter is to provide a simple & quick interface to export data from the static XML files found in your Open Tibia server.
 
 ## Requirements
