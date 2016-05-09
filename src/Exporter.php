@@ -58,16 +58,32 @@ class Exporter
      * Export the response from the parser implementation.
      *
      * @param  array  $settings  []
+     * @param  boolean  $json  false
      * @return mixed
      */
-    public function export(array $settings = [])
+    public function export(array $settings = [], $json = false)
     {
         $response = $this->parser->parse($settings);
+
+        if ($json) {
+            $response = json_encode($response);
+        }
 
         if ($this->file) {
             file_put_contents($this->file, $response);
         }
 
         return $response;
+    }
+
+    /**
+     * Export the response as JSON.
+     *
+     * @param  array  $settings  []
+     * @return mixed
+     */
+    public function exportJson(array $settings = [])
+    {
+        return $this->export($settings, true);
     }
 }
