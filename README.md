@@ -18,5 +18,9 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 
 > Parses the entire list of items (`./data/items/items.xml`).
 
+#### pandaac\Exporter\Parsers\Commands ([Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml)))
+
+> Parses the entire list of commands (`./data/XML/commands.xml`).
+
 #### Commands, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...
 These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
