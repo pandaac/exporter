@@ -14,22 +14,22 @@ Parsers are what decides how to parse a certain file, and how to structure its r
 
 + **pandaac\Exporter\Parsers\Monster**  
    Parses an individual monster file.  
-   `./data/monsters/Demons/demon.xml`   
+   e.g. `./data/monsters/Demons/demon.xml`   
    [Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml))
 
 + **pandaac\Exporter\Parsers\Monsters**  
    Parses the entire list of monsters, and optionally every individual monster file found within it.  
-   `./data/monsters/monsters.xml`  
+   i.e. `./data/monsters/monsters.xml`  
    [Example](https://github.com/pandaac/exporter/wiki/Example:-Monster-list-(monsters.xml))
 
 + **pandaac\Exporter\Parsers\Items**  
    Parses the entire list of items.  
-   `./data/items/items.xml`  
+   i.e. `./data/items/items.xml`  
    [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml))
 
 + **pandaac\Exporter\Parsers\Commands**  
    Parses the entire list of commands.  
-   `./data/XML/commands.xml`  
+   i.e. `./data/XML/commands.xml`  
    [Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml))
 
 + **Spells, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...**  
