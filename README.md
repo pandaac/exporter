@@ -10,6 +10,10 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
   * mbstring
 
 ## Parsers
+Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
+
+---
+
 #### pandaac\Exporter\Parsers\Monster ([Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml)))
 Parses an individual monster file (e.g. `./data/monsters/Demons/demon.xml`).
 
