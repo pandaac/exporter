@@ -5,18 +5,33 @@ namespace pandaac\Exporter\Contracts;
 interface Parser
 {
     /**
-     * Instantiate a new parser object.
+     * Instantiate the parser object.
      *
-     * @param  string  $file
+     * @param  array  $options  []
      * @return void
      */
-    public function __construct($file);
+    public function __construct(array $options = []);
 
     /**
-     * Parse the file.
+     * Return the reader implementation.
      *
-     * @param  array  $settings  []
-     * @return mixed
+     * @return \pandaac\Exporter\Contracts\Reader
      */
-    public function parse(array $settings = []);
+    public function getReader();
+
+    /**
+     * Set the reader implementation.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return void
+     */
+    public function setReader(Reader $reader);
+
+    /**
+     * Parse the specified file.
+     *
+     * @param  string  $file
+     * @return \Illuminate\Support\Collection
+     */
+    public function parse($file);
 }

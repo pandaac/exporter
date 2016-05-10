@@ -2,527 +2,503 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use Exception;
-
 use pandaac\Exporter\Parser;
-use pandaac\Exporter\Contracts\Parser as Contract;
+use Illuminate\Support\Collection;
+use pandaac\Exporter\Contracts\Reader;
 
-class Monster extends Parser implements Contract
+class Monster extends Parser
 {
     /**
-     * Parse the file.
+     * Holds all of the default options.
      *
-     * @param  array  $settings  []
-     * @return mixed
+     * @var array
      */
-    public function parse(array $settings = [])
-    {
-        $this->assignSettings($settings, [
-            'health'        => true,
-            'look'          => true,
-            'targetchange'  => true,
-            'flags'         => true,
-            'attacks'       => true,
-            'defenses'      => true,
-            'elements'      => true,
-            'voices'        => true,
-            'summons'       => true,
-            'loot'          => true,
-        ]);
-
-        if (! $this->reader->open($this->file)) {
-            throw new Exception(sprintf('Unable to read file %s', $this->file));
-        }
-
-        while ($this->reader->read()) {
-            $this->iterate($settings);
-
-            $this->setPreviousElement();
-        }
-
-        $this->reader->close();
-
-        return $this->response;
-    }
+    protected $options = [
+        'health'        => true,
+        'look'          => true,
+        'targetchange'  => true,
+        'flags'         => true,
+        'attacks'       => true,
+        'defenses'      => true,
+        'elements'      => true,
+        'immunities'    => true,
+        'voices'        => true,
+        'summons'       => true,
+        'loot'          => true,
+    ];
 
     /**
-     * Get the monster iteration.
-     *
-     * @return void
+     * Holds all of the predefined sections.
      */
-    protected function iterate()
+    protected $sections = [
+        'health', 'look', 'targetchange', 'flags', 'attacks', 'defenses', 'elements', 'immunities', 'voices', 'summons', 'loot',
+    ];
+
+    /**
+     * Create a new collection object.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function newCollection()
     {
-        // Get the monster information
-        if ($monster = $this->getMonsterInformation()) {
-            $this->response = array_merge((array) $this->response, $monster);
-        }
+        $collection = new Collection;
 
-        // Get the monster health
-        if ($this->isSettingEnabled('health') and $health = $this->getMonsterHealth()) {
-            $this->response['health'] = $health;
-        }
-
-        // Get the monster look
-        if ($this->isSettingEnabled('look') and $look = $this->getMonsterLook()) {
-            $this->response['look'] = $look;
-        }
-
-        // Get the monster targetChange
-        if ($this->isSettingEnabled('targetchange') and $targetChange = $this->getMonsterTargetChange()) {
-            $this->response['targetchange'] = $targetChange;
-        }
-
-        // Get the monster flags
-        if ($this->isSettingEnabled('flags') and $flag = $this->getMonsterFlags()) {
-            $this->response['flags'][key($flag)] = current($flag);
-        }
-
-        // Get the monster attacks
-        if ($this->isSettingEnabled('attacks') and $attacks = $this->getMonsterAttacks()) {
-            $this->response['attacks'][] = $attacks;
-        }
-
-        // Get the monster attack attributes
-        if ($this->isSettingEnabled('attacks') and $attributes = $this->getMonsterAttackAttributes()) {
-            if (! isset($this->response['attacks']) or ! is_array(($attacks = $this->response['attacks']))) {
-                return false;
+        foreach ($this->sections as $section) {
+            if ($this->disabled($section)) {
+                continue;
             }
 
-            end($attacks);
-            $this->response['attacks'][key($attacks)]['attributes'][$attributes['key']] = $attributes['value'];
+            $collection->put($section, new Collection);
         }
 
-        // Get the monster defense stats
-        if ($this->isSettingEnabled('defenses') and $defenses = $this->getMonsterDefenseStats()) {
-            $this->response['defenses'] = $defenses;
+        return $collection;
+    }
+
+    /**
+     * Handle every iteration of the parsing process.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \Illuminate\Support\Collection  $collection
+     * @return \Illuminate\Support\Collection
+     */
+    public function iteration(Reader $reader, Collection $collection)
+    {
+        // Monster details
+        if ($reader->is('monster')) {
+            return $this->details($reader, $collection);
         }
 
-        // Get the monster defenses
-        if ($this->isSettingEnabled('defenses') and $defenses = $this->getMonsterDefenses()) {
-            $this->response['defenses']['defenses'][] = $defenses;
+        // Monster health
+        if ($this->enabled('health') and $iteration = $this->health($reader)) {
+            return $collection->put('health', $iteration);
         }
 
-        // Get the monster defense attributes
-        if ($this->isSettingEnabled('defenses') and $attributes = $this->getMonsterDefenseAttributes()) {
-            if (! isset($this->response['defenses']['defenses']) or ! is_array(($defenses = $this->response['defenses']['defenses']))) {
-                return false;
+        // Monster look
+        if ($this->enabled('look') and $iteration = $this->look($reader)) {
+            return $collection->put('look', $iteration);
+        }
+
+        // Monster target change
+        if ($this->enabled('targetchange') and $iteration = $this->targetchange($reader)) {
+            return $collection->put('targetchange', $iteration);
+        }
+
+        // Monster flags
+        if ($this->enabled('flags') and $iteration = $this->flags($reader)) {
+            return $collection->put('flags', $collection->get('flags')->put(
+                key($iteration), current($iteration)
+            ));
+        }
+
+        // Monster attacks
+        if ($this->enabled('attacks')) {
+            $attacks = $collection->get('attacks');
+
+            // Attacks
+            if ($iteration = $this->attacks($reader)) {
+                return $collection->put('attacks', $attacks->push($iteration));
             }
 
-            end($defenses);
-            $this->response['defenses']['defenses'][key($defenses)]['attributes'][$attributes['key']] = $attributes['value'];
+            // Attack attributes
+            if ($iteration = $this->attackAttributes($reader)) {
+                $attacks->last()->get('attributes')->put(
+                    $iteration['key'], $iteration['value']
+                );
+
+                return $collection->put('attacks', $attacks);
+            }
         }
 
-        // Get the monster elements
-        if ($this->isSettingEnabled('elements') and $element = $this->getMonsterElements()) {
-            $this->response['elements'][key($element)] = current($element);
-        }
+        // Monster defenses
+        if ($this->enabled('defenses')) {
+            // Statistics
+            if ($iteration = $this->defenseStatistics($reader)) {
+                return $collection->put('defenses', $iteration);
+            }
+            
+            $statistics = $collection->get('defenses');
 
-        // Get the monster immunities
-        if ($this->isSettingEnabled('statistics') and $immunity = $this->getMonsterImmunities()) {
-            $this->response['immunities'][key($immunity)] = current($immunity);
-        }
+            // Defenses
+            if ($iteration = $this->defenses($reader)) {
+                $statistics->get('defenses')->push($iteration);
 
-        // Get the monster voices
-        if ($this->isSettingEnabled('voices') and $voices = $this->getMonsterVoices()) {
-            $this->response['voices'] = $voices;
-        }
-
-        // Get the monster voice sentences
-        if ($this->isSettingEnabled('voices') and $sentence = $this->getMonsterVoiceSentences()) {
-            $this->response['voices']['sentences'][] = current($sentence);
-        }
-
-        // Get the monster summon statistics
-        if ($this->isSettingEnabled('summons') and $summons = $this->getMonsterSummonStats()) {
-            $this->response['summons'] = $summons;
-        }
-
-        // Get the monster summons
-        if ($this->isSettingEnabled('summons') and $summon = $this->getMonsterSummons()) {
-            $this->response['summons']['summons'][] = $summon;
-        }
-
-        // Get the monster loot
-        if ($this->isSettingEnabled('loot') and $loot = $this->getMonsterLoot()) {
-            $this->response['loot'][] = $loot;
-        }
-
-        // Get the monster loot comments
-        if ($this->isSettingEnabled('loot') and $itemComment = $this->getMonsterLootComment()) {
-            if (! isset($this->response['loot']) or ! is_array(($items = $this->response['loot']))) {
-                return false;
+                return $collection->put('defenses', $statistics);
             }
 
-            end($items);
-            $this->response['loot'][key($items)]['comment'] = trim($itemComment);
+            // Defense attributes
+            if ($iteration = $this->defenseAttributes($reader)) {
+                $statistics->get('defenses')->last()->get('attributes')->put(
+                    $iteration['key'], $iteration['value']
+                );
+
+                return $collection->put('defenses', $statistics);
+            }
+        }
+
+        // Monster elements
+        if ($this->enabled('elements') and $iteration = $this->elements($reader)) {
+            return $collection->put('elements', $collection->get('elements')->put(
+                key($iteration), current($iteration)
+            ));
+        }
+
+        // Monster immunities
+        if ($this->enabled('immunities') and $iteration = $this->immunities($reader)) {
+            return $collection->put('immunities', $collection->get('immunities')->put(
+                key($iteration), current($iteration)
+            ));
+        }
+
+        // Monster voices
+        if ($this->enabled('voices')) {
+            // Statistics
+            if ($iteration = $this->voices($reader)) {
+                return $collection->put('voices', $iteration);
+            }
+
+            // Sentences
+            if ($iteration = $this->voiceSentences($reader)) {
+                $voices = $collection->get('voices');
+                
+                $voices->get('sentences')->push($iteration['sentence']);
+
+                return $collection->put('voices', $voices);
+            }
+        }
+
+        // Monster summons
+        if ($this->enabled('summons')) {
+            // Statistics
+            if ($iteration = $this->summonStatistics($reader)) {
+                return $collection->put('summons', $iteration);
+            }
+
+            // Summons
+            if ($iteration = $this->summons($reader)) {
+                $summons = $collection->get('summons');
+                
+                $summons->get('summons')->push($iteration);
+
+                return $collection->put('summons', $summons);
+            }
+        }
+
+        // Loot
+        if ($this->enabled('loot')) {
+            $loot = $collection->get('loot');
+
+            // Items
+            if ($iteration = $this->loot($reader)) {
+                return $collection->put('loot', $loot->push($iteration));
+            }
+
+            // Possible item comments (usually item names, not reliable though)
+            if ($iteration = $this->lootComments($reader)) {
+                $loot->last()->put('comment', $iteration);
+
+                return $collection->put('loot', $loot);
+            }
         }
     }
 
     /**
-     * Get the monster information.
+     * Parse the detailed information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \Illuminate\Support\Collection  $collection
+     * @return \Illuminate\Support\Collection
      */
-    protected function getMonsterInformation()
+    protected function details(Reader $reader, Collection $collection)
     {
-        if (! $this->isElement('monster')) {
+        $attributes = $reader->attributes('name', 'nameDescription', 'race', 'experience', 'speed', 'manacost', 'skull');
+
+        foreach (array_reverse($attributes) as $attribute => $value) {
+            $collection->prepend($value, $attribute);
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Parse the health information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function health(Reader $reader)
+    {
+        if (! $reader->is('health')) {
             return false;
         }
 
-        return $this->attributes(
-            'name', 
-            'nameDescription', 
-            'race', 
-            'experience', 
-            'speed', 
-            'manacost', 
-            'skull'
+        return $reader->attributes('now', 'max');
+    }
+
+    /**
+     * Parse the look information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function look(Reader $reader)
+    {
+        if (! $reader->is('look')) {
+            return false;
+        }
+
+        return $reader->attributes('type', 'typeex', 'head', 'body', 'legs', 'feet', 'addons', 'mount', 'corpse');
+    }
+
+    /**
+     * Parse the targetchange information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function targetchange(Reader $reader)
+    {
+        if (! $reader->is('targetchange')) {
+            return false;
+        }
+
+        return $reader->attributes(['speed', 'interval'], 'chance');
+    }
+
+    /**
+     * Parse the flags information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function flags(Reader $reader)
+    {
+        if (! $reader->is('flag')) {
+            return false;
+        }
+
+        return $reader->attributes('summonable', 'attackable', 'hostile', 'illusionable', 'convinceable', 'pushable', 'canpushitems', 'canpushcreatures', 'staticattack', 'lightlevel', 'lightcolor', 'targetdistance', 'runonhealth', 'hidehealth');
+    }
+
+    /**
+     * Parse the attacks information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
+     */
+    protected function attacks(Reader $reader)
+    {
+        if (! $reader->is('attack')) {
+            return false;
+        }
+
+        $attributes = $reader->attributes('name', 'interval', 'min', 'max', 'chance', 'range', 'radius', 'target', 'skill', 'attack', 'speedchange', 'duration');
+
+        return new Collection(
+            array_merge($attributes, ['attributes' => new Collection])
         );
     }
 
     /**
-     * Get the monster health.
+     * Parse the attack attributes information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
      */
-    protected function getMonsterHealth()
+    protected function attackAttributes(Reader $reader)
     {
-        if (! $this->isElement('health')) {
+        if (! ($reader->is('attribute') and $reader->parent('attack'))) {
             return false;
         }
 
-        return $this->attributes(
-            'now', 
-            'max'
+        return $reader->attributes('key', 'value');
+    }
+
+    /**
+     * Parse the defense statistics attributes information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
+     */
+    protected function defenseStatistics(Reader $reader)
+    {
+        if (! $reader->is('defenses')) {
+            return false;
+        }
+
+        $attributes = $reader->attributes('armor', 'defense');
+
+        return new Collection(
+            array_merge($attributes, ['defenses' => new Collection])
         );
     }
 
     /**
-     * Get the monster look.
+     * Parse the defenses information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
      */
-    protected function getMonsterLook()
+    protected function defenses(Reader $reader)
     {
-        if (! $this->isElement('look')) {
+        if (! $reader->is('defense')) {
             return false;
         }
 
-        return $this->attributes(
-            'type', 
-            'typeex', 
-            'head', 
-            'body', 
-            'legs', 
-            'feet', 
-            'addons', 
-            'mount', 
-            'corpse'
+        $attributes = $reader->attributes('name', 'interval', 'min', 'max', 'chance', 'range', 'radius', 'target', 'skill', 'attack', 'speedchange', 'duration');
+
+        return new Collection(
+            array_merge($attributes, ['attributes' => new Collection])
         );
     }
 
     /**
-     * Get the monster target change.
+     * Parse the defense attributes information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
      */
-    protected function getMonsterTargetChange()
+    protected function defenseAttributes(Reader $reader)
     {
-        if (! $this->isElement('targetchange')) {
+        if (! ($reader->is('attribute') and $reader->parent('defense'))) {
             return false;
         }
 
-        return $this->attributes(
-            ['speed', 'interval'], 
-            'chance'
+        return $reader->attributes('key', 'value');
+    }
+
+    /**
+     * Parse the elements information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function elements(Reader $reader)
+    {
+        if (! $reader->is('element')) {
+            return false;
+        }
+
+        $attributes = $reader->attributes('physicalPercent', 'icePercent', ['poisonPercent', 'earthPercent'], 'firePercent', 'energyPercent', 'holyPercent', 'deathPercent', 'drownPercent', 'lifedrainPercent', 'manadrainPercent');
+
+        $keys = array_keys($attributes);
+
+        array_walk($keys, function (&$attribute) {
+            $attribute = preg_replace('/Percent$/i', null, $attribute);
+        });
+
+        return array_combine($keys, array_values($attributes));
+    }
+
+    /**
+     * Parse the immunities information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
+     */
+    protected function immunities(Reader $reader)
+    {
+        if (! $reader->is('immunity')) {
+            return false;
+        }
+
+        return $reader->attributes('physical', 'energy', 'fire', ['poison', 'earth'], 'drown', 'ice', 'holy', 'death', 'lifedrain', 'manadrain', 'paralyze', 'outfit', 'drunk', ['invisible', 'invisibility'], 'bleed');
+    }
+
+    /**
+     * Parse the voices information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
+     */
+    protected function voices(Reader $reader)
+    {
+        if (! $reader->is('voices')) {
+            return false;
+        }
+
+        $attributes = $reader->attributes(['speed', 'interval'], 'chance');
+
+        return new Collection(
+            array_merge($attributes, ['sentences' => new Collection])
         );
     }
 
     /**
-     * Get the monster flags.
+     * Parse the voice sentences information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
      */
-    protected function getMonsterFlags()
+    protected function voiceSentences(Reader $reader)
     {
-        if (! $this->isElement('flag')) {
+        if (! $reader->is('voice')) {
             return false;
         }
 
-        return $this->attributes(
-            'summonable', 
-            'attackable', 
-            'hostile', 
-            'illusionable', 
-            'convinceable', 
-            'pushable', 
-            'canpushitems', 
-            'canpushcreatures', 
-            'staticattack', 
-            'lightlevel', 
-            'lightcolor', 
-            'targetdistance', 
-            'runonhealth', 
-            'hidehealth'
+        return $reader->attributes('sentence');
+    }
+
+    /**
+     * Parse the summon statistics information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
+     */
+    protected function summonStatistics(Reader $reader)
+    {
+        if (! $reader->is('summons')) {
+            return false;
+        }
+
+        $attributes = $reader->attributes('maxSummons');
+
+        return new Collection(
+            array_merge($attributes, ['summons' => new Collection])
         );
     }
 
     /**
-     * Get the monster attacks.
+     * Parse the summons information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return array
      */
-    protected function getMonsterAttacks()
+    protected function summons(Reader $reader)
     {
-        if (! $this->isElement('attack')) {
+        if (! $reader->is('summon')) {
             return false;
         }
 
-        return $this->attributes(
-            'name', 
-            'interval', 
-            'min', 
-            'max', 
-            'chance', 
-            'range', 
-            'radius', 
-            'target', 
-            'skill', 
-            'attack', 
-            'speedchange', 
-            'duration'
-        );
+        return $reader->attributes('name', ['speed', 'interval'], 'chance');
     }
 
     /**
-     * Get the monster attack attributes.
+     * Parse the loot information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
      */
-    protected function getMonsterAttackAttributes()
+    protected function loot(Reader $reader)
     {
-        if (! ($this->isElement('attribute') and $this->previousElementWas('attack'))) {
+        if (! $reader->is('item')) {
             return false;
         }
 
-        return $this->attributes(
-            'key', 
-            'value'
-        );
+        return new Collection($reader->attributes('id', 'countmax', 'chance'));
     }
 
     /**
-     * Get the monster defense statistics.
+     * Parse the loot comment information from the monster file.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return string
      */
-    protected function getMonsterDefenseStats()
+    protected function lootComments(Reader $reader)
     {
-        if (! $this->isElement('defenses')) {
+        if (! ($reader->isComment() and $reader->parent('loot'))) {
             return false;
         }
 
-        return $this->attributes(
-            'armor', 
-            'defense'
-        );
-    }
-
-    /**
-     * Get the monster defenses.
-     *
-     * @return mixed
-     */
-    protected function getMonsterDefenses()
-    {
-        if (! $this->isElement('defense')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'name', 
-            'interval', 
-            'min', 
-            'max', 
-            'chance', 
-            'range', 
-            'radius', 
-            'target', 
-            'skill', 
-            'attack', 
-            'speedchange', 
-            'duration'
-        );
-    }
-
-    /**
-     * Get the monster defense attributes.
-     *
-     * @return mixed
-     */
-    protected function getMonsterDefenseAttributes()
-    {
-        if (! ($this->isElement('attribute') and $this->previousElementWas('defense'))) {
-            return false;
-        }
-
-        return $this->attributes(
-            'key', 
-            'value'
-        );
-    }
-
-    /**
-     * Get the monster elements.
-     *
-     * @return mixed
-     */
-    protected function getMonsterElements()
-    {
-        if (! $this->isElement('element')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'physicalPercent', 
-            'icePercent', 
-            ['poisonPercent', 'earthPercent'], 
-            'firePercent', 
-            'energyPercent', 
-            'holyPercent', 
-            'deathPercent', 
-            'drownPercent', 
-            'lifedrainPercent', 
-            'manadrainPercent'
-        );
-    }
-
-    /**
-     * Get the monster immunities.
-     *
-     * @return mixed
-     */
-    protected function getMonsterImmunities()
-    {
-        if (! $this->isElement('immunity')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'physical', 
-            'energy', 
-            'fire', 
-            ['poison', 'earth'], 
-            'drown', 
-            'ice', 
-            'holy', 
-            'death', 
-            'lifedrain', 
-            'manadrain', 
-            'paralyze', 
-            'outfit', 
-            'drunk', 
-            ['invisible', 'invisibility'], 
-            'bleed' 
-        );
-    }
-
-    /**
-     * Get the monster voices.
-     *
-     * @return mixed
-     */
-    protected function getMonsterVoices()
-    {
-        if (! $this->isElement('voices')) {
-            return false;
-        }
-
-        return $this->attributes(
-            ['speed', 'interval'], 
-            'chance'
-        );
-    }
-
-    /**
-     * Get the monster voice sentences.
-     *
-     * @return mixed
-     */
-    protected function getMonsterVoiceSentences()
-    {
-        if (! $this->isElement('voice')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'sentence' 
-        );
-    }
-
-    /**
-     * Get the monster summon statistics.
-     *
-     * @return mixed
-     */
-    protected function getMonsterSummonStats()
-    {
-        if (! $this->isElement('summons')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'maxSummons'
-        );
-    }
-
-    /**
-     * Get the monster summons.
-     *
-     * @return mixed
-     */
-    protected function getMonsterSummons()
-    {
-        if (! $this->isElement('summon')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'name', 
-            ['speed', 'interval'], 
-            'chance'
-        );
-    }
-
-    /**
-     * Get the monster loot.
-     *
-     * @return mixed
-     */
-    protected function getMonsterLoot()
-    {
-        if (! $this->isElement('item')) {
-            return false;
-        }
-
-        return $this->attributes(
-            'id', 
-            'countmax', 
-            'chance'
-        );
-    }
-
-    /**
-     * Get the monster loot comment.
-     *
-     * @return mixed
-     */
-    protected function getMonsterLootComment()
-    {
-        if (! ($this->isComment() and $this->previousElementWas('item'))) {
-            return false;
-        }
-
-        return $this->value();
+        return trim($reader->value());
     }
 }

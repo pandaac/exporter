@@ -2,62 +2,99 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use Exception;
+use pandaac\Exporter\Parser;
+use Illuminate\Support\Collection;
+use pandaac\Exporter\Contracts\Reader;
 
-use pandaac\Exporter\ListParser;
-use pandaac\Exporter\Contracts\Parser as Contract;
-
-class Monsters extends ListParser implements Contract
+class Monsters extends Parser
 {
     /**
-     * Parse the file.
+     * Holds all of the default options.
      *
-     * @param  array  $settings  []
-     * @return mixed
+     * @var array
      */
-    public function parse(array $settings = [])
-    {
-        $this->assignSettings($settings);
-
-        if (! $this->reader->open($this->file)) {
-            throw new Exception(sprintf('Unable to read file %s', $this->file));
-        }
-
-        while ($this->reader->read()) {
-            if (! ($monster = $this->getMonster())) {
-                continue;
-            }
-
-            $this->response[] = $monster;
-        }
-
-        $this->reader->close();
-
-        return $this->response;
-    }
+    protected $options = [
+        'recursion' => true,
+    ];
 
     /**
-     * Get the current monster.
+     * Handle every iteration of the parsing process.
      *
-     * @return mixed
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \Illuminate\Support\Collection  $collection
+     * @return \Illuminate\Support\Collection
      */
-    protected function getMonster()
+    public function iteration(Reader $reader, Collection $collection)
     {
-        if (! $this->isElement('monster')) {
+        if (! $reader->is('monster')) {
             return false;
         }
 
-        $path = realpath(
-            dirname($this->file).'/'.$this->reader->getAttribute('file')
-        );
-
-        if ($this->isRecursionEnabled()) {
-            return (new Monster($path))->parse($this->settings);
+        // Monster information
+        if ($iteration = $this->information($reader)) {
+            $collection->push($iteration);
         }
 
-        return [
-            'name' => $this->reader->getAttribute('name'),
-            'file' => $path,
-        ];
+        // Monster details
+        if ($this->enabled('recursion') and $iteration = $this->details($reader, $collection)) {
+            $monster = $collection->pop();
+
+            return $collection->push($iteration->put('paths', $monster));
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Parse the basic information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return \Illuminate\Support\Collection
+     */
+    protected function information(Reader $reader)
+    {
+        $attributes = $reader->attributes('name', 'file');
+
+        return new Collection(
+            array_merge($attributes, [
+                'path' => realpath(dirname($this->file).'/'.$attributes['file']),
+            ])
+        );
+    }
+
+    /**
+     * Parse the detailed information from the monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \Illuminate\Support\Collection  $collection
+     * @return \pandaac\Exporter\Parsers\Monster
+     */
+    protected function details(Reader $reader, Collection $collection)
+    {
+        $monster = $collection->last();
+
+        if (! ($path = $monster->get('path'))) {
+            return false;
+        }
+
+        return $this->parseMonster($reader, $path);
+    }
+
+    /**
+     * Parse an invidiual monster file.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  string  $path
+     * @return \pandaac\Exporter\Parsers\Monster
+     */
+    private function parseMonster(Reader $reader, $path)
+    {
+        $parser = new Monster($this->options);
+
+        $readerClass = get_class($reader);
+
+        $parser->setReader(new $readerClass);
+
+        return $parser->parse($path);
     }
 }

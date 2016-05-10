@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "illuminate/support": "~5.2"
     },
     "autoload": {
         "psr-4": {

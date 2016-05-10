@@ -2,6 +2,7 @@
 
 namespace pandaac\Exporter;
 
+use pandaac\Exporter\Contracts\Reader;
 use pandaac\Exporter\Contracts\Parser;
 
 class Exporter
@@ -14,21 +15,28 @@ class Exporter
     protected $parser;
 
     /**
-     * Holds the save file path.
+     * Holds the file to be parsed.
      *
      * @var string
      */
     protected $file;
 
     /**
-     * Instantiate a new exporter object.
+     * Instantiate the exporter object.
      *
+     * @param  string  $file
      * @param  \pandaac\Exporter\Contracts\Parser  $parser
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader  null
      * @return void
      */
-    public function __construct(Parser $parser)
+    public function __construct($file, Parser $parser, Reader $reader = null)
     {
+        $this->file = $file;
         $this->parser = $parser;
+        
+        if ($reader) {
+            $this->getParser()->setReader($reader);
+        }
     }
 
     /**
@@ -42,48 +50,32 @@ class Exporter
     }
 
     /**
-     * Save the exported response to a file.
-     *
-     * @param  string  $file
-     * @return self
-     */
-    public function save($file)
-    {
-        $this->file = $file;
-
-        return $this;
-    }
-
-    /**
      * Export the response from the parser implementation.
      *
-     * @param  array  $settings  []
-     * @param  boolean  $json  false
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function export(array $settings = [], $json = false)
+    public function export()
     {
-        $response = $this->parser->parse($settings);
-
-        if ($json) {
-            $response = json_encode($response);
-        }
-
-        if ($this->file) {
-            file_put_contents($this->file, $response);
-        }
-
-        return $response;
+        return $this->parser->parse($this->file);
     }
 
     /**
-     * Export the response as JSON.
+     * Return the parsed response as an array.
      *
-     * @param  array  $settings  []
-     * @return mixed
+     * @return array
      */
-    public function exportJson(array $settings = [])
+    public function exportArray()
     {
-        return $this->export($settings, true);
+        return $this->export()->toArray();
+    }
+
+    /**
+     * Return the parsed response as JSON.
+     *
+     * @return string
+     */
+    public function exportJson()
+    {
+        return $this->export()->toJson();
     }
 }

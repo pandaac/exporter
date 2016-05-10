@@ -2,176 +2,149 @@
 
 namespace pandaac\Exporter;
 
-use Exception;
-use XMLReader;
-
+use pandaac\Exporter\Reader;
+use pandaac\Exporter\Contracts;
+use Illuminate\Support\Collection;
 use pandaac\Exporter\Contracts\Parser as Contract;
 
 abstract class Parser implements Contract
 {
     /**
-     * Holds the file path.
-     *
-     * @var string
-     */
-    protected $file;
-
-    /**
      * Holds the reader implementation.
      *
-     * @var \XMLReader
+     * @var \pandaac\Exporter\Contracts\Reader
      */
     protected $reader;
 
     /**
-     * Holds the response implementation.
+     * Instantiate the parser object.
      *
-     * @var array
+     * @param  array  $options  []
+     * @return void
      */
-    protected $response = [];
+    public function __construct(array $options = [])
+    {
+        $this->extendOptions($options);
+
+        $this->setReader(new Reader);
+    }
 
     /**
-     * Holds the previous node.
+     * Return the reader implementation.
      *
-     * @var string
+     * @return \pandaac\Exporter\Contracts\Reader
      */
-    protected $previousNode;
+    public function getReader()
+    {
+        return $this->reader;
+    }
 
     /**
-     * Holds the settings array.
+     * Set the reader implementation.
      *
-     * @var array
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @return void
      */
-    protected $settings;
+    public function setReader(Contracts\Reader $reader)
+    {
+        $this->reader = $reader;
+    }
 
     /**
-     * Instantiate a new parser object.
+     * Parse the specified file.
      *
      * @param  string  $file
-     * @return void
+     * @return \Illuminate\Support\Collection
      */
-    public function __construct($file)
+    public function parse($file)
     {
-        $this->file = realpath($file);
-        $this->reader = new XMLReader;
+        $reader = $this->getReader();
 
-        if (! file_exists($this->file)) {
-            throw new Exception(sprintf('Could not locate file %s', $this->file));
-        }
+        $reader->open($this->file = $file);
+
+        $collection = $this->newCollection();
+
+        do {
+
+            $this->iteration($reader, $collection);
+
+            $reader->setParentIfAvailable();
+
+        } while ($reader->read());
+
+        $reader->close();
+
+        return $collection;
     }
 
     /**
-     * Get attributes from the reader implementation.
+     * Extend the default options with the custom ones.
      *
+     * @param  array  $options
      * @return array
      */
-    protected function attributes()
+    protected function extendOptions(array $options)
     {
-        $attributes = [];
-
-        foreach (func_get_args() as $attribute) {
-            if (is_array($attribute)) {
-                if ($alternative = call_user_func_array([$this, 'attributes'], $attribute)) {
-                    $attributes[key($alternative)] = current($alternative);
-                }
-                
-                continue;
-            }
-
-            $value = $this->reader->getAttribute($attribute);
-
-            if (preg_match('/^(\-?[0-9]+)$/', $value)) {
-                $value = (int) $value;
-            }
-
-            $attributes[$attribute] = $value;
+        if (! $options or ! property_exists($this, 'options')) {
+            return null;
         }
 
-        return array_filter($attributes, function ($attribute) {
-            return ! is_null($attribute);
-        });
+        $this->options = array_merge($this->options, $options);
     }
 
     /**
-     * Assign the settings.
+     * Get the value of the specified option.
      *
-     * @param  array  $settings
-     * @param  array  $defaults  []
-     * @return boolean
-     */
-    protected function assignSettings(array $settings, array $defaults = [])
-    {
-        $this->settings = array_merge($defaults, $settings);
-    }
-
-    /**
-     * Check if a setting is enabled.
-     *
-     * @param  string  $name
-     * @return boolean
-     */
-    protected function isSettingEnabled($name)
-    {
-        return isset($this->settings[$name]) and $this->settings[$name];
-    }
-
-    /**
-     * Get the node value.
-     *
+     * @param  string  $option
      * @return mixed
      */
-    protected function value()
+    protected function option($option)
     {
-        return $this->reader->value;
-    }
-
-    /**
-     * Check if the node is an element.
-     *
-     * @param  string  $name  null
-     * @return boolean
-     */
-    protected function isElement($name = null)
-    {
-        if ($name and strtolower($this->reader->name) !== strtolower($name)) {
-            return false;
+        if (! isset($this->options[$option])) {
+            return null;
         }
 
-        return $this->reader->nodeType === XMLReader::ELEMENT;
+        return $this->options[$option];
     }
 
     /**
-     * Check if the node is a comment.
+     * Check if the specified option is enabled.
      *
+     * @param  string  $option
      * @return boolean
      */
-    protected function isComment()
+    protected function enabled($option)
     {
-        return $this->reader->nodeType === XMLReader::COMMENT;
+        return isset($this->options[$option]) and $this->options[$option];
     }
 
     /**
-     * Check if the previous node was a specific element.
+     * Check if the specified option is disabled.
      *
-     * @param  string  $name
+     * @param  string  $option
      * @return boolean
      */
-    protected function previousElementWas($name)
+    protected function disabled($option)
     {
-        return $this->previousNode === strtolower($name);
+        return ! $this->enabled($option);
     }
 
     /**
-     * Sets the previous node.
+     * Create a new collection object.
      *
-     * @return void
+     * @return \Illuminate\Support\Collection
      */
-    protected function setPreviousElement()
+    protected function newCollection()
     {
-        if (! $this->isElement()) {
-            return;
-        }
-
-        $this->previousNode = strtolower($this->reader->name);
+        return new Collection;
     }
+
+    /**
+     * Handle every iteration of the parsing process.
+     *
+     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \Illuminate\Support\Collection  $collection
+     * @return boolean
+     */
+    abstract public function iteration(Contracts\Reader $reader, Collection $collection);
 }
