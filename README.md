@@ -14,5 +14,9 @@ The aim of the pandaac exporter is to provide a simple & quick interface to expo
 
 > Parses the entire list of monsters (`./data/monsters/monsters.xml`), and optionally every individual monster file found within it.
 
-#### Items, Commands, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...
+#### pandaac\Exporter\Parsers\Items ([Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml)))
+
+> Parses the entire list of items (`./data/items/items.xml`).
+
+#### Commands, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...
 These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
