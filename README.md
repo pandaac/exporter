@@ -12,8 +12,6 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
----
-
 + **pandaac\Exporter\Parsers\Monster**  
    Parses an individual monster file.  
    `./data/monsters/Demons/demon.xml`   
