@@ -34,3 +34,64 @@ Parsers are what decides how to parse a certain file, and how to structure its r
 
 + **Spells, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...**  
    These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
+
+## Extending
+#### Parsers
+As the `parser` implementation is passed as an argument to the `Exporter` class when it's instantiated, all you really need to think about when writing your own implementation is including the [contract](https://github.com/pandaac/exporter/blob/master/src/Contracts/Parser.php).
+
+> _You may also extend the `pandaac\Exporter\Parser` class to get a bunch of predefined functionality (e.g. options)._
+
+```php
+namespace Example\Parsers;
+
+use pandaac\Exporter\Contracts\Parser as Contract;
+
+class MyCustomMonsterParser implements Contract
+{
+  // Define all of the necessary methods as per the contract...
+}
+```
+
+```php
+use pandaac\Exporter\Exporter;
+use Example\Parsers\MyCustomMonsterParser;
+
+$exporter = new Exporter(
+  './data/monster/monsters.xml',
+  new MyCustomMonsterParser
+);
+```
+
+#### Reader
+The same principles applies to the `reader` implementation, however, obviously with its own [contract](https://github.com/pandaac/exporter/blob/master/src/Contracts/Reader.php). The only difference is the way you register it. You'll have to call the `setReader` method on the `parser` implementation.
+
+> _By default, we utilise the [XMLReader](http://php.net/manual/en/book.xmlreader.php) class as part of our reader implementation._
+
+```php
+namespace Example;
+
+use pandaac\Exporter\Contracts\Reader as Contract;
+
+class MyCustomReader implements Contract
+{
+  // Define all of the necessary methods as per the contract...
+}
+```
+
+```php
+use Example\MyCustomReader;
+use pandaac\Exporter\Exporter;
+use Example\Parsers\MyCustomMonsterParser;
+
+$exporter = new Exporter(
+  './data/monster/monsters.xml',
+  new MyCustomMonsterParser
+);
+
+$exporter->getParser()->setReader(new MyCustomReader);
+```
+
+## Contributing
+Please refer to the [PSR-2 guidelines](http://www.php-fig.org/psr/psr-2/) and squash your commits together into one before submitting a pull request.
+
+Thank you.
