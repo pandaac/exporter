@@ -82,7 +82,7 @@ class Items extends Parser
         }
 
         return new Collection(
-            $reader->attributes('id', 'fromid', 'toid', 'name')
+            $reader->attributes('id', 'fromid', 'toid', 'article', 'name')
         );
     }
 
