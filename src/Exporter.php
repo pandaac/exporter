@@ -58,24 +58,4 @@ class Exporter
     {
         return $this->parser->parse($this->file);
     }
-
-    /**
-     * Return the parsed response as an array.
-     *
-     * @return array
-     */
-    public function exportArray()
-    {
-        return $this->export()->toArray();
-    }
-
-    /**
-     * Return the parsed response as JSON.
-     *
-     * @return string
-     */
-    public function exportJson()
-    {
-        return $this->export()->toJson();
-    }
 }
