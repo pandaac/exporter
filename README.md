@@ -1,6 +1,8 @@
 # Exporter
 The aim of the pandaac exporter is to provide a simple & relatively quick interface to export data from the static XML files found in your Open Tibia server.
 
+> _It is strongly recommended that you cache the response rather than parsing it over and over again._
+
 ## Requirements
 * PHP 5.5.9+
 * PHP LibXML extension
