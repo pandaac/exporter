@@ -16,14 +16,14 @@ class Monster extends Parser
     protected $options = [
         'health'        => true,
         'look'          => true,
-        'targetchange'  => true,
-        'flags'         => true,
-        'attacks'       => true,
-        'defenses'      => true,
-        'elements'      => true,
-        'immunities'    => true,
-        'voices'        => true,
-        'summons'       => true,
+        'targetchange'  => false,
+        'flags'         => false,
+        'attacks'       => false,
+        'defenses'      => false,
+        'elements'      => false,
+        'immunities'    => false,
+        'voices'        => false,
+        'summons'       => false,
         'loot'          => true,
     ];
 
@@ -31,7 +31,8 @@ class Monster extends Parser
      * Holds all of the predefined sections.
      */
     protected $sections = [
-        'health', 'look', 'targetchange', 'flags', 'attacks', 'defenses', 'elements', 'immunities', 'voices', 'summons', 'loot',
+        'health', 'look', 'targetchange', 'flags', 'attacks', 'defenses', 
+        'elements', 'immunities', 'voices', 'summons', 'loot',
     ];
 
     /**
@@ -68,6 +69,10 @@ class Monster extends Parser
             return $this->details($reader, $collection);
         }
 
+        if (! ($reader->isElement() or $reader->isAttribute() or $reader->isComment())) {
+            return $collection;
+        }
+
         // Monster health
         if ($this->enabled('health') and $iteration = $this->health($reader)) {
             return $collection->put('health', $iteration);
@@ -85,9 +90,9 @@ class Monster extends Parser
 
         // Monster flags
         if ($this->enabled('flags') and $iteration = $this->flags($reader)) {
-            return $collection->put('flags', $collection->get('flags')->put(
-                key($iteration), current($iteration)
-            ));
+            $flags = $collection->get('flags')->merge($iteration);
+
+            return $collection->put('flags', $flags);
         }
 
         // Monster attacks
@@ -102,7 +107,7 @@ class Monster extends Parser
             // Attack attributes
             if ($iteration = $this->attackAttributes($reader)) {
                 $attacks->last()->get('attributes')->put(
-                    $iteration['key'], $iteration['value']
+                    $iteration->get('key'), $iteration->get('value')
                 );
 
                 return $collection->put('attacks', $attacks);
@@ -128,7 +133,7 @@ class Monster extends Parser
             // Defense attributes
             if ($iteration = $this->defenseAttributes($reader)) {
                 $statistics->get('defenses')->last()->get('attributes')->put(
-                    $iteration['key'], $iteration['value']
+                    $iteration->get('key'), $iteration->get('value')
                 );
 
                 return $collection->put('defenses', $statistics);
@@ -137,16 +142,16 @@ class Monster extends Parser
 
         // Monster elements
         if ($this->enabled('elements') and $iteration = $this->elements($reader)) {
-            return $collection->put('elements', $collection->get('elements')->put(
-                key($iteration), current($iteration)
-            ));
+            $elements = $collection->get('elements')->merge($iteration);
+
+            return $collection->put('elements', $elements);
         }
 
         // Monster immunities
         if ($this->enabled('immunities') and $iteration = $this->immunities($reader)) {
-            return $collection->put('immunities', $collection->get('immunities')->put(
-                key($iteration), current($iteration)
-            ));
+            $immunities = $collection->get('immunities')->merge($iteration);
+
+            return $collection->put('immunities', $immunities);
         }
 
         // Monster voices
@@ -223,7 +228,7 @@ class Monster extends Parser
      * Parse the health information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function health(Reader $reader)
     {
@@ -231,14 +236,16 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('now', 'max');
+        return new Collection(
+            $reader->attributes('now', 'max')
+        );
     }
 
     /**
      * Parse the look information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function look(Reader $reader)
     {
@@ -246,14 +253,16 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('type', 'typeex', 'head', 'body', 'legs', 'feet', 'addons', 'mount', 'corpse');
+        return new Collection(
+            $reader->attributes('type', 'typeex', 'head', 'body', 'legs', 'feet', 'addons', 'mount', 'corpse')
+        );
     }
 
     /**
      * Parse the targetchange information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function targetchange(Reader $reader)
     {
@@ -261,14 +270,16 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes(['speed', 'interval'], 'chance');
+        return new Collection(
+            $reader->attributes(['speed', 'interval'], 'chance')
+        );
     }
 
     /**
      * Parse the flags information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function flags(Reader $reader)
     {
@@ -276,7 +287,9 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('summonable', 'attackable', 'hostile', 'illusionable', 'convinceable', 'pushable', 'canpushitems', 'canpushcreatures', 'staticattack', 'lightlevel', 'lightcolor', 'targetdistance', 'runonhealth', 'hidehealth');
+        return new Collection(
+            $reader->attributes('summonable', 'attackable', 'hostile', 'illusionable', 'convinceable', 'pushable', 'canpushitems', 'canpushcreatures', 'staticattack', 'lightlevel', 'lightcolor', 'targetdistance', 'runonhealth', 'hidehealth')
+        );
     }
 
     /**
@@ -302,7 +315,7 @@ class Monster extends Parser
      * Parse the attack attributes information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function attackAttributes(Reader $reader)
     {
@@ -310,7 +323,9 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('key', 'value');
+        return new Collection(
+            $reader->attributes('key', 'value')
+        );
     }
 
     /**
@@ -355,7 +370,7 @@ class Monster extends Parser
      * Parse the defense attributes information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function defenseAttributes(Reader $reader)
     {
@@ -363,14 +378,16 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('key', 'value');
+        return new Collection(
+            $reader->attributes('key', 'value')
+        );
     }
 
     /**
      * Parse the elements information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function elements(Reader $reader)
     {
@@ -386,14 +403,16 @@ class Monster extends Parser
             $attribute = preg_replace('/Percent$/i', null, $attribute);
         });
 
-        return array_combine($keys, array_values($attributes));
+        return new Collection(
+            array_combine($keys, array_values($attributes))
+        );
     }
 
     /**
      * Parse the immunities information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function immunities(Reader $reader)
     {
@@ -401,7 +420,9 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('physical', 'energy', 'fire', ['poison', 'earth'], 'drown', 'ice', 'holy', 'death', 'lifedrain', 'manadrain', 'paralyze', 'outfit', 'drunk', ['invisible', 'invisibility'], 'bleed');
+        return new Collection(
+            $reader->attributes('physical', 'energy', 'fire', ['poison', 'earth'], 'drown', 'ice', 'holy', 'death', 'lifedrain', 'manadrain', 'paralyze', 'outfit', 'drunk', ['invisible', 'invisibility'], 'bleed')
+        );
     }
 
     /**
@@ -427,7 +448,7 @@ class Monster extends Parser
      * Parse the voice sentences information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function voiceSentences(Reader $reader)
     {
@@ -435,7 +456,9 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('sentence');
+        return new Collection(
+            $reader->attributes('sentence')
+        );
     }
 
     /**
@@ -461,7 +484,7 @@ class Monster extends Parser
      * Parse the summons information from the monster file.
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function summons(Reader $reader)
     {
@@ -469,7 +492,9 @@ class Monster extends Parser
             return false;
         }
 
-        return $reader->attributes('name', ['speed', 'interval'], 'chance');
+        return new Collection(
+            $reader->attributes('name', ['speed', 'interval'], 'chance')
+        );
     }
 
     /**
@@ -484,7 +509,9 @@ class Monster extends Parser
             return false;
         }
 
-        return new Collection($reader->attributes('id', 'countmax', 'chance'));
+        return new Collection(
+            $reader->attributes('id', 'countmax', 'chance')
+        );
     }
 
     /**

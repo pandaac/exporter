@@ -34,6 +34,13 @@ interface Reader
     public function setParentIfAvailable();
 
     /**
+     * Revert back to the previous parent when we leave the active element.
+     *
+     * @return void
+     */
+    public function revertParentIfNecessary();
+
+    /**
      * Check if the current element matches the specified name.
      *
      * @param  string  $element

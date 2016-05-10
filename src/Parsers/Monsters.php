@@ -14,7 +14,7 @@ class Monsters extends Parser
      * @var array
      */
     protected $options = [
-        'recursion' => true,
+        'recursion' => false,
     ];
 
     /**
@@ -27,7 +27,11 @@ class Monsters extends Parser
     public function iteration(Reader $reader, Collection $collection)
     {
         if (! $reader->is('monster')) {
-            return false;
+            return $collection;
+        }
+
+        if (! ($reader->isElement() or $reader->isAttribute() or $reader->isComment())) {
+            return $collection;
         }
 
         // Monster information
@@ -67,7 +71,7 @@ class Monsters extends Parser
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
      * @param  \Illuminate\Support\Collection  $collection
-     * @return \pandaac\Exporter\Parsers\Monster
+     * @return \Illuminate\Support\Collection
      */
     protected function details(Reader $reader, Collection $collection)
     {
@@ -85,7 +89,7 @@ class Monsters extends Parser
      *
      * @param  \pandaac\Exporter\Contracts\Reader  $reader
      * @param  string  $path
-     * @return \pandaac\Exporter\Parsers\Monster
+     * @return \Illuminate\Support\Collection
      */
     private function parseMonster(Reader $reader, $path)
     {

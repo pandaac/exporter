@@ -17,6 +17,13 @@ abstract class Parser implements Contract
     protected $reader;
 
     /**
+     * Holds the file to parse.
+     *
+     * @var string
+     */
+    protected $file;
+
+    /**
      * Instantiate the parser object.
      *
      * @param  array  $options  []
@@ -65,6 +72,8 @@ abstract class Parser implements Contract
         $collection = $this->newCollection();
 
         do {
+
+            $reader->revertParentIfNecessary();
 
             $this->iteration($reader, $collection);
 

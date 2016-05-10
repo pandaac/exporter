@@ -18,9 +18,9 @@ class Reader implements Contract
     /**
      * Holds the parent element name.
      *
-     * @var string
+     * @var array
      */
-    protected $parent;
+    protected $parents = [];
 
     /**
      * Instantiate the reader object.
@@ -78,7 +78,23 @@ class Reader implements Contract
             return;
         }
 
-        $this->parent = $this->name();
+        $this->parents[] = $this->name();
+    }
+
+    /**
+     * Revert back to the previous parent when we leave the active element.
+     *
+     * @return void
+     */
+    public function revertParentIfNecessary()
+    {
+        if (! ($this->type() === XMLReader::END_ELEMENT and $this->parent() == $this->name())) {
+            return false;
+        }
+
+        $previous = end($this->parents);
+
+        array_pop($this->parents);
     }
 
     /**
@@ -130,11 +146,17 @@ class Reader implements Contract
      */
     public function parent($element = null)
     {
-        if ($element) {
-            return strtolower($this->parent) === strtolower($element);
+        if (empty($this->parents)) {
+            return false;
         }
 
-        return $this->parent;
+        $parent = end($this->parents);
+
+        if ($element) {
+            return strtolower($parent) === strtolower($element);
+        }
+
+        return $parent;
     }
 
     /**
@@ -166,7 +188,7 @@ class Reader implements Contract
                 continue;
             }
 
-            if (! ($value = $this->attribute($attribute))) {
+            if (is_null($value = $this->attribute($attribute))) {
                 continue;
             }
 
