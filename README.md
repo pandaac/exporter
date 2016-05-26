@@ -12,45 +12,37 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
-+ **pandaac\Exporter\Parsers\Monster**  
++ **pandaac\Exporter\Parsers\Monster <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml)) ]</sup>**  
    Parses an individual monster file.  
-   e.g. `./data/monsters/Demons/demon.xml`   
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml))
+   e.g. `./data/monsters/Demons/demon.xml`
 
-+ **pandaac\Exporter\Parsers\Monsters**  
++ **pandaac\Exporter\Parsers\Monsters <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Monster-list-(monsters.xml)) ]</sup>**  
    Parses the entire list of monsters, and optionally every individual monster file found within it.  
-   i.e. `./data/monsters/monsters.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Monster-list-(monsters.xml))
+   i.e. `./data/monsters/monsters.xml`
 
-+ **pandaac\Exporter\Parsers\Items**  
++ **pandaac\Exporter\Parsers\Items <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml)) ]</sup>**  
    Parses the entire list of items.  
-   i.e. `./data/items/items.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml))
+   i.e. `./data/items/items.xml`
 
-+ **pandaac\Exporter\Parsers\Commands**  
++ **pandaac\Exporter\Parsers\Commands <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml)) ]</sup>**  
    Parses the entire list of commands.  
-   i.e. `./data/XML/commands.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml))
+   i.e. `./data/XML/commands.xml`
 
-+ **pandaac\Exporter\Parsers\Outfits**  
++ **pandaac\Exporter\Parsers\Outfits <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfits-list-(outfits.xml)) ]</sup>**  
    Parses the entire list of outfits.  
-   i.e. `./data/XML/outfits.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfits-list-(outfits.xml))
+   i.e. `./data/XML/outfits.xml`
 
-+ **pandaac\Exporter\Parsers\Mounts**  
++ **pandaac\Exporter\Parsers\Mounts <sup>[ [Example]() ]</sup>**  
    Parses the entire list of mounts.  
-   i.e. `./data/XML/mounts.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Mounts-list-(mounts.xml))
+   i.e. `./data/XML/mounts.xml`
 
-+ **pandaac\Exporter\Parsers\Groups**  
++ **pandaac\Exporter\Parsers\Groups <sup>[ [Example]() ]</sup>**  
    Parses the entire list of groups.  
-   i.e. `./data/XML/groups.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Groups-list-(groups.xml))
+   i.e. `./data/XML/groups.xml`
 
-+ **pandaac\Exporter\Parsers\Stages**  
++ **pandaac\Exporter\Parsers\Stages <sup>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Level-stages-(stages.xml)) ]</sup>**  
    Parses the entire list of level stages.  
-   i.e. `./data/XML/stages.xml`  
-   [Example](https://github.com/pandaac/exporter/wiki/Example:-Level-stages-(stages.xml))
+   i.e. `./data/XML/stages.xml`
 
 + **Spells, Quests, Vocations etc...**  
    These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
