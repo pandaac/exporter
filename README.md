@@ -32,7 +32,27 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    i.e. `./data/XML/commands.xml`  
    [Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml))
 
-+ **Spells, Groups, Mounts, Outfits, Quests, Stages, Vocations etc...**  
++ **pandaac\Exporter\Parsers\Outfits**  
+   Parses the entire list of outfits.  
+   i.e. `./data/XML/outfits.xml`  
+   [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfits-list-(outfits.xml))
+
++ **pandaac\Exporter\Parsers\Mounts**  
+   Parses the entire list of mounts.  
+   i.e. `./data/XML/mounts.xml`  
+   [Example](https://github.com/pandaac/exporter/wiki/Example:-Mounts-list-(mounts.xml))
+
++ **pandaac\Exporter\Parsers\Groups**  
+   Parses the entire list of groups.  
+   i.e. `./data/XML/groups.xml`  
+   [Example](https://github.com/pandaac/exporter/wiki/Example:-Groups-list-(groups.xml))
+
++ **pandaac\Exporter\Parsers\Stages**  
+   Parses the entire list of level stages.  
+   i.e. `./data/XML/stages.xml`  
+   [Example](https://github.com/pandaac/exporter/wiki/Example:-Level-stages-(stages.xml))
+
++ **Spells, Quests, Vocations etc...**  
    These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
 
 ## Extending
