@@ -3,6 +3,8 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 
 > _It is strongly recommended that you cache the response rather than parsing it over and over again._
 
+> _As of right now, this exporter assumes that you're using [The Forgotten Server 1.1](https://github.com/otland/forgottenserver/tree/1.1). I have no immediate plans to expand this to any other distrobutions until I expand the distrobution range for [pandaac](https://github.com/pandaac/pandaac) itself. However, if there's enough public pressure for a specific distrobution, I may reconsider._
+
 ## Requirements
 * PHP 5.5.9+
 * PHP Extensions
