@@ -46,8 +46,16 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    Parses the entire list of level stages.  
    i.e. `./data/XML/stages.xml`
 
-+ **Spells, Quests, Vocations etc...**  
-   These will all be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
++ **pandaac\Exporter\Parsers\Vocations <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Vocation-list-(vocations.xml)) ]</sub>**  
+   Parses the entire list of vocations.  
+   i.e. `./data/XML/vocations.xml`
+
++ **pandaac\Exporter\Parsers\Quests <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Quest-list-(quests.xml)) ]</sub>**  
+   Parses the entire list of quests.  
+   i.e. `./data/XML/quests.xml`
+
++ **Spells & others...**  
+   These will be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
 
 ## Extending
 #### Parsers
