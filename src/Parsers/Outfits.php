@@ -17,7 +17,7 @@ class Outfits extends Parser
      */
     public function iteration(Reader $reader, Collection $collection)
     {
-        // Mount information
+        // Outfit information
         if ($iteration = $this->outfit($reader)) {
             $collection->push($iteration);
         }
