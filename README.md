@@ -24,19 +24,19 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    Parses the entire list of items.  
    i.e. `./data/items/items.xml`
 
-+ **pandaac\Exporter\Parsers\Commands <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Commands-list-(commands.xml)) ]</sub>**  
++ **pandaac\Exporter\Parsers\Commands <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Command-list-(commands.xml)) ]</sub>**  
    Parses the entire list of commands.  
    i.e. `./data/XML/commands.xml`
 
-+ **pandaac\Exporter\Parsers\Outfits <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfits-list-(outfits.xml)) ]</sub>**  
++ **pandaac\Exporter\Parsers\Outfits <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfit-list-(outfits.xml)) ]</sub>**  
    Parses the entire list of outfits.  
    i.e. `./data/XML/outfits.xml`
 
-+ **pandaac\Exporter\Parsers\Mounts <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Mounts-list-(mounts.xml)) ]</sub>**  
++ **pandaac\Exporter\Parsers\Mounts <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Mount-list-(mounts.xml)) ]</sub>**  
    Parses the entire list of mounts.  
    i.e. `./data/XML/mounts.xml`
 
-+ **pandaac\Exporter\Parsers\Groups <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Groups-list-(groups.xml)) ]</sub>**  
++ **pandaac\Exporter\Parsers\Groups <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Group-list-(groups.xml)) ]</sub>**  
    Parses the entire list of groups.  
    i.e. `./data/XML/groups.xml`
 
