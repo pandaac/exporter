@@ -11,6 +11,12 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
   * libxml
   * mbstring
 
+## Install
+##### Via Composer
+```
+composer require pandaac/exporter
+```
+
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
