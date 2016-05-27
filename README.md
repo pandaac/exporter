@@ -14,6 +14,18 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
++ **pandaac\Exporter\Parsers\Commands <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Command-list-(commands.xml)) ]</sub>**  
+   Parses the entire list of commands.  
+   i.e. `./data/XML/commands.xml`
+
++ **pandaac\Exporter\Parsers\Groups <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Group-list-(groups.xml)) ]</sub>**  
+   Parses the entire list of groups.  
+   i.e. `./data/XML/groups.xml`
+
++ **pandaac\Exporter\Parsers\Items <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml)) ]</sub>**  
+   Parses the entire list of items.  
+   i.e. `./data/items/items.xml`
+
 + **pandaac\Exporter\Parsers\Monster <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml)) ]</sub>**  
    Parses an individual monster file.  
    e.g. `./data/monsters/Demons/demon.xml`
@@ -22,25 +34,21 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    Parses the entire list of monsters, and optionally every individual monster file found within it.  
    i.e. `./data/monsters/monsters.xml`
 
-+ **pandaac\Exporter\Parsers\Items <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml)) ]</sub>**  
-   Parses the entire list of items.  
-   i.e. `./data/items/items.xml`
-
-+ **pandaac\Exporter\Parsers\Commands <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Command-list-(commands.xml)) ]</sub>**  
-   Parses the entire list of commands.  
-   i.e. `./data/XML/commands.xml`
++ **pandaac\Exporter\Parsers\Mounts <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Mount-list-(mounts.xml)) ]</sub>**  
+   Parses the entire list of mounts.  
+   i.e. `./data/XML/mounts.xml`
 
 + **pandaac\Exporter\Parsers\Outfits <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfit-list-(outfits.xml)) ]</sub>**  
    Parses the entire list of outfits.  
    i.e. `./data/XML/outfits.xml`
 
-+ **pandaac\Exporter\Parsers\Mounts <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Mount-list-(mounts.xml)) ]</sub>**  
-   Parses the entire list of mounts.  
-   i.e. `./data/XML/mounts.xml`
++ **pandaac\Exporter\Parsers\Quests <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Quest-list-(quests.xml)) ]</sub>**  
+   Parses the entire list of quests.  
+   i.e. `./data/XML/quests.xml`
 
-+ **pandaac\Exporter\Parsers\Groups <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Group-list-(groups.xml)) ]</sub>**  
-   Parses the entire list of groups.  
-   i.e. `./data/XML/groups.xml`
++ **pandaac\Exporter\Parsers\Spells <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Spell-list-(spells.xml)) ]</sub>**  
+   Parses the entire list of spells.  
+   i.e. `./data/spells/spells.xml`
 
 + **pandaac\Exporter\Parsers\Stages <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Level-stages-(stages.xml)) ]</sub>**  
    Parses the entire list of level stages.  
@@ -50,12 +58,8 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    Parses the entire list of vocations.  
    i.e. `./data/XML/vocations.xml`
 
-+ **pandaac\Exporter\Parsers\Quests <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Quest-list-(quests.xml)) ]</sub>**  
-   Parses the entire list of quests.  
-   i.e. `./data/XML/quests.xml`
-
-+ **Spells & others...**  
-   These will be available eventually, but as of right now, you'll have to create your own parsers, or put in a request for it under the [issues](https://github.com/pandaac/exporter/issues).
++ **Other?**  
+   If you feel like I've missed a vital XML file that needs parsing, please do let me know through the [issues](https://github.com/pandaac/exporter/issues).
 
 ## Extending
 #### Parsers
