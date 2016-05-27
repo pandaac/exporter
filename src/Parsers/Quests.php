@@ -14,8 +14,8 @@ class Quests extends Parser
      * @var array
      */
     protected $options = [
-        'missions' => true,
-        'states' => true,
+        'missions'  => true,
+        'states'    => true,
     ];
 
     /**

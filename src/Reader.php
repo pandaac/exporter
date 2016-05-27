@@ -184,7 +184,9 @@ class Reader implements Contract
         $values = [];
         foreach ($attributes as $attribute) {
             if (is_array($attribute)) {
-                $values += array_splice($this->attributes($attribute), 0, 1, true);
+                $attributeValues = $this->attributes($attribute);
+
+                $values += array_splice($attributeValues, 0, 1, true);
                 continue;
             }
 
