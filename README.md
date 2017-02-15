@@ -85,25 +85,25 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Items);
    ```
 + **Map Houses**  
-   You must specify the relative filename as the third argument.  
+   > You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\MapHouses, [], 'forgotten-house.xml');
    ```
 + **Map Spawns**  
-   You must specify the relative filename as the third argument.  
+   > You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\MapSpawns, [], 'forgotten-spawn.xml');
    ```
 + **Monster**  
-   You must specify the relative filename as the third argument.  
+   > You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Monster, [], 'Demons/Demon.xml');
    ```
 + **Monsters**  
-   You may also load the data from within each individual monster file by setting the `recursive` attribute to `true`.  
+   > You may also load the data from within each individual monster file by setting the `recursive` attribute to `true`.  
    
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Monsters, [ 'recursive' => true ]);
@@ -121,7 +121,7 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Movements);
    ```
 + **NPC**  
-   You must specify the relative filename as the third argument.  
+   > You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\NPC, [], 'The Oracle.xml');
@@ -139,13 +139,13 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Quests);
    ```
 + **Raid**  
-   You must specify the relative filename as the third argument.  
+   > You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Raid, [], 'testraid.xml');
    ```
 + **Raids**  
-   You may also load the data from within each individual raid file by setting the `recursive` attribute to `true`.  
+   > You may also load the data from within each individual raid file by setting the `recursive` attribute to `true`.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Raids, [ 'recursive' => true ]);
@@ -184,7 +184,9 @@ Parsers are what decides how to parse a certain file, and how to structure its r
 ##### OTBM Parsers
 > The OTBM engine has not yet been developed, and thus the following parsers are rendered obsolete for the time being.
 
-+ **Towns**
++ **Towns**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Towns);
    ```
