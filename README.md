@@ -35,7 +35,7 @@ $response = $exporter->parse(new Parsers\Weapons);
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
-##### XML Parsers
+### XML Parsers
 + **Actions**  
    > This parser has no attributes.  
 
@@ -181,7 +181,7 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Weapons);
    ```
 
-##### OTBM Parsers
+### OTBM Parsers
 > The OTBM engine has not yet been developed, and thus the following parsers are rendered obsolete for the time being.
 
 + **Towns**  
