@@ -2,83 +2,44 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use pandaac\Exporter\Parser;
-use Illuminate\Support\Collection;
-use pandaac\Exporter\Contracts\Reader;
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Engines\XML;
+use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Stages extends Parser
+class Stages implements Contract
 {
-    /**
-     * Holds all of the predefined sections.
-     */
-    protected $sections = ['stages'];
-
-    /**
-     * Create a new collection object.
+    /** 
+     * Get the relative file path.
      *
-     * @return \Illuminate\Support\Collection
+     * @return string
      */
-    protected function newCollection()
+    public function filePath()
     {
-        $collection = new Collection;
-
-        foreach ($this->sections as $section) {
-            $collection->put($section, new Collection);
-        }
-
-        return $collection;
+        return '/data/XML/stages.xml';
     }
 
     /**
-     * Handle every iteration of the parsing process.
+     * Get the parser engine.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
-     * @return \Illuminate\Support\Collection
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
      */
-    public function iteration(Reader $reader, Collection $collection)
+    public function engine(array $attributes)
     {
-        // Stage configuration
-        if ($reader->is('config')) {
-            return $this->isEnabled($reader, $collection);
-        }
-
-        // Stage information
-        if ($iteration = $this->stage($reader)) {
-            $stages = $collection->get('stages')->push($iteration);
-
-            return $collection->put('stages', $stages);
-        }
-
-        return $collection;
+        return new XML($attributes);
     }
 
     /**
-     * Parse the status information from the stages file.
+     * Parse the file.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    protected function isEnabled(Reader $reader, Collection $collection)
+    public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        return $collection->prepend((boolean) $reader->attribute('enabled'), 'enabled');
-    }
-
-    /**
-     * Parse the stage information from the stages file.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
-     */
-    protected function stage(Reader $reader)
-    {
-        if (! $reader->is('stage')) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('minlevel', 'maxlevel', 'multiplier')
-        );
+        return $output->first();
     }
 }

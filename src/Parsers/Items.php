@@ -2,121 +2,45 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use pandaac\Exporter\Parser;
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
-use pandaac\Exporter\Contracts\Reader;
+use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Items extends Parser
+class Items implements Contract
 {
-    /**
-     * Holds all of the default options.
+    /** 
+     * Get the relative file path.
      *
-     * @var array
+     * @return string
      */
-    protected $options = [
-        'attributes' => false,
-        'properties' => false,
-    ];
-
-    /**
-     * Handle every iteration of the parsing process.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
-     * @return \Illuminate\Support\Collection
-     */
-    public function iteration(Reader $reader, Collection $collection)
+    public function filePath()
     {
-        // Item information
-        if ($iteration = $this->item($reader)) {
-            $collection->push($iteration);
-        }
-
-        if (! ($reader->isElement() or $reader->isAttribute())) {
-            return $collection;
-        }
-
-        if ($this->enabled('attributes')) {
-            // Item attributes
-            if ($iteration = $this->itemAttributes($reader)) {
-                $item = $collection->last();
-
-                if (! $item->get('attributes')) {
-                    $item->put('attributes', new Collection);
-                }
-
-                $item->get('attributes')->push($iteration);
-
-                return $collection;
-            }
-
-            if ($this->enabled('properties')) {
-                // Item attribute properties
-                if ($iteration = $this->itemAttributeProperties($reader)) {
-                    $attribute = $collection->last()->get('attributes')->last();
-
-                    if (! $attribute->get('properties')) {
-                        $attribute->put('properties', new Collection);
-                    }
-
-                    $attribute->get('properties')->push($iteration);
-
-                    return $collection;
-                }
-            }
-        }
-        
-        return $collection;
+        return '/data/items/items.xml';
     }
 
     /**
-     * Parse the item information from the items file.
+     * Get the parser engine.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
      */
-    protected function item(Reader $reader)
+    public function engine(array $attributes)
     {
-        if (! $reader->is('item')) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('id', 'fromid', 'toid', 'article', 'name')
-        );
+        return new XML($attributes);
     }
 
     /**
-     * Parse the item attributes information from the items file.
+     * Parse the file.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    protected function itemAttributes(Reader $reader)
+    public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        if (! ($reader->is('attribute') and $reader->parent('item'))) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('key', 'value')
-        );
-    }
-
-    /**
-     * Parse the item attribute properties information from the items file.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
-     */
-    protected function itemAttributeProperties(Reader $reader)
-    {
-        if (! ($reader->is('attribute') and $reader->parent('attribute'))) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('key', 'value')
-        );
+        return $output->first()->get('item', new Collection);
     }
 }

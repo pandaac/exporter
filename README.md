@@ -1,17 +1,14 @@
-![Abandoned](https://raw.githubusercontent.com/eklundchristopher/resources/master/abandoned/abandoned.png)
-
 # Exporter
-The aim of the pandaac exporter is to provide a simple & relatively quick interface to export data from the static XML files found in your Open Tibia server.
+The aim of the pandaac exporter is to provide a simple & quick interface to export data from the common XML files found within the data/ directory of your Open Tibia server.
 
 > _It is strongly recommended that you cache the response rather than parsing it over and over again._
 
 > _As of right now, this exporter assumes that you're using [The Forgotten Server 1.1](https://github.com/otland/forgottenserver/tree/1.1). I have no immediate plans to expand this to any other distrobutions until I expand the distrobution range for [pandaac](https://github.com/pandaac/pandaac) itself. However, if there's enough public pressure for a specific distrobution, I may reconsider._
 
 ## Requirements
-* PHP 5.5.9+
+* PHP 5.6.4+
 * PHP Extensions
   * libxml
-  * mbstring
 
 ## Install
 ##### Via Composer
@@ -19,111 +16,144 @@ The aim of the pandaac exporter is to provide a simple & relatively quick interf
 composer require pandaac/exporter
 ```
 
+## Usage
+Pass the absolute path to your Open Tibia server as the first argument of the `Exporter` object and specify which parser you would like to use as the first argument of the `parse` method of the `Exporter` object.
+
+The `parse` method also accepts a second argument for additional attributes (depends on the parser), and a third argument for overriding the default filepath (or providing a specific parser with a filepath).
+
+```php
+use pandaac\Exporter\Parsers;
+use pandaac\Exporter\Exporter;
+
+$exporter = new Exporter(
+    '/home/pandaac/theforgottenserver'
+);
+
+$response = $exporter->parse(new Parsers\Weapons);
+```
+
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
-+ **pandaac\Exporter\Parsers\Commands <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Command-list-(commands.xml)) ]</sub>**  
-   Parses the entire list of commands.  
-   i.e. `./data/XML/commands.xml`
+##### XML Parsers
++ **Actions**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Actions);
+   ```
++ **Chat Channels**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\ChatChannels);
+   ```
++ **Commands**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Commands);
+   ```
++ **Creature Scripts**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\CreatureScripts);
+   ```
++ **Events**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Events);
+   ```
++ **Global Events**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\GlobalEvents);
+   ```
++ **Groups**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Groups);
+   ```
++ **Items**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Items);
+   ```
++ **Map Houses**
+   You must specify the relative filename as the third argument.
 
-+ **pandaac\Exporter\Parsers\Groups <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Group-list-(groups.xml)) ]</sub>**  
-   Parses the entire list of groups.  
-   i.e. `./data/XML/groups.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\MapHouses, [], 'forgotten-house.xml');
+   ```
++ **Map Spawns**
+   You must specify the relative filename as the third argument.
 
-+ **pandaac\Exporter\Parsers\Items <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Item-list-(items.xml)) ]</sub>**  
-   Parses the entire list of items.  
-   i.e. `./data/items/items.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\MapSpawns, [], 'forgotten-spawn.xml');
+   ```
++ **Monster**
+   You must specify the relative filename as the third argument.
 
-+ **pandaac\Exporter\Parsers\Monster <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Individual-monster-(e.g.-demon.xml)) ]</sub>**  
-   Parses an individual monster file.  
-   e.g. `./data/monsters/Demons/demon.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Monster, [], 'Demons/Demon.xml');
+   ```
++ **Monsters**
+   You may also load the data from within each individual monster file by setting the `recursive` attribute to `true`.
+   
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Monsters, [ 'recursive' => true ]);
+   ```
++ **Mounts**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Mounts);
+   ```
++ **Movements**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Movements);
+   ```
++ **NPC**
+   You must specify the relative filename as the third argument.
 
-+ **pandaac\Exporter\Parsers\Monsters <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Monster-list-(monsters.xml)) ]</sub>**  
-   Parses the entire list of monsters, and optionally every individual monster file found within it.  
-   i.e. `./data/monsters/monsters.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\NPC, [], 'The Oracle.xml');
+   ```
++ **Outfits**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Outfits);
+   ```
++ **Quests**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Quests);
+   ```
++ **Raid**
+   You must specify the relative filename as the third argument.
 
-+ **pandaac\Exporter\Parsers\Mounts <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Mount-list-(mounts.xml)) ]</sub>**  
-   Parses the entire list of mounts.  
-   i.e. `./data/XML/mounts.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Raid, [], 'testraid.xml');
+   ```
++ **Raids**
+   You may also load the data from within each individual raid file by setting the `recursive` attribute to `true`.
 
-+ **pandaac\Exporter\Parsers\Outfits <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Outfit-list-(outfits.xml)) ]</sub>**  
-   Parses the entire list of outfits.  
-   i.e. `./data/XML/outfits.xml`
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Raids, [ 'recursive' => true ]);
+   ```
++ **Spells**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Spells);
+   ```
++ **Stages**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Stages);
+   ```
++ **TalkActions**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\TalkActions);
+   ```
++ **Vocations**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Vocations);
+   ```
++ **Weapons**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Weapons);
+   ```
 
-+ **pandaac\Exporter\Parsers\Quests <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Quest-list-(quests.xml)) ]</sub>**  
-   Parses the entire list of quests.  
-   i.e. `./data/XML/quests.xml`
+##### OTBM Parsers
+> The OTBM engine has not yet been developed, and thus the following parsers are rendered obsolete for the time being.
 
-+ **pandaac\Exporter\Parsers\Spells <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Spell-list-(spells.xml)) ]</sub>**  
-   Parses the entire list of spells.  
-   i.e. `./data/spells/spells.xml`
-
-+ **pandaac\Exporter\Parsers\Stages <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Level-stages-(stages.xml)) ]</sub>**  
-   Parses the entire list of level stages.  
-   i.e. `./data/XML/stages.xml`
-
-+ **pandaac\Exporter\Parsers\Vocations <sub>[ [Example](https://github.com/pandaac/exporter/wiki/Example:-Vocation-list-(vocations.xml)) ]</sub>**  
-   Parses the entire list of vocations.  
-   i.e. `./data/XML/vocations.xml`
-
-+ **Other?**  
-   If you feel like I've missed a vital XML file that needs parsing, please do let me know through the [issues](https://github.com/pandaac/exporter/issues).
-
-## Extending
-#### Parsers
-As the `parser` implementation is passed as an argument to the `Exporter` class when it's instantiated, all you really need to think about when writing your own implementation is including the [contract](https://github.com/pandaac/exporter/blob/master/src/Contracts/Parser.php).
-
-> _You may also extend the `pandaac\Exporter\Parser` class to get a bunch of predefined functionality (e.g. options)._
-
-```php
-namespace Example\Parsers;
-
-use pandaac\Exporter\Contracts\Parser as Contract;
-
-class MyCustomMonsterParser implements Contract
-{
-  // Define all of the necessary methods as per the contract...
-}
-```
-
-```php
-use pandaac\Exporter\Exporter;
-use Example\Parsers\MyCustomMonsterParser;
-
-$exporter = new Exporter(
-  './data/monster/monsters.xml',
-  new MyCustomMonsterParser
-);
-```
-
-#### Reader
-The same principles applies to the `reader` implementation, however, obviously with its own [contract](https://github.com/pandaac/exporter/blob/master/src/Contracts/Reader.php). The only difference is the way you register it. You'll have to call the `setReader` method on the `parser` implementation.
-
-> _By default, we utilise the [XMLReader](http://php.net/manual/en/book.xmlreader.php) class as part of our reader implementation._
-
-```php
-namespace Example;
-
-use pandaac\Exporter\Contracts\Reader as Contract;
-
-class MyCustomReader implements Contract
-{
-  // Define all of the necessary methods as per the contract...
-}
-```
-
-```php
-use Example\MyCustomReader;
-use pandaac\Exporter\Exporter;
-use Example\Parsers\MyCustomMonsterParser;
-
-$exporter = new Exporter(
-  './data/monster/monsters.xml',
-  new MyCustomMonsterParser
-);
-
-$exporter->getParser()->setReader(new MyCustomReader);
-```
++ **Towns**
+   ```php
+   $exporter->parse(new \pandaac\Exporter\Parsers\Towns);
+   ```
 
 ## Contributing
 Please refer to the [PSR-2 guidelines](http://www.php-fig.org/psr/psr-2/) and squash your commits together into one before submitting a pull request.

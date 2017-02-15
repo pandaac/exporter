@@ -5,10 +5,9 @@ namespace pandaac\Exporter\Parsers;
 use pandaac\Exporter\Output;
 use pandaac\Exporter\Exporter;
 use pandaac\Exporter\Engines\XML;
-use Illuminate\Support\Collection;
 use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Mounts implements Contract
+class Raid implements Contract
 {
     /** 
      * Get the relative file path.
@@ -17,7 +16,7 @@ class Mounts implements Contract
      */
     public function filePath()
     {
-        return '/data/XML/mounts.xml';
+        return '/data/raids/';
     }
 
     /**
@@ -41,6 +40,6 @@ class Mounts implements Contract
      */
     public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        return $output->first()->get('mount', new Collection);
+        return $output->first();
     }
 }

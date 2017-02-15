@@ -2,106 +2,45 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use pandaac\Exporter\Parser;
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
-use pandaac\Exporter\Contracts\Reader;
+use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Quests extends Parser
+class Quests implements Contract
 {
-    /**
-     * Holds all of the default options.
+    /** 
+     * Get the relative file path.
      *
-     * @var array
+     * @return string
      */
-    protected $options = [
-        'missions'  => true,
-        'states'    => true,
-    ];
-
-    /**
-     * Handle every iteration of the parsing process.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
-     * @return \Illuminate\Support\Collection
-     */
-    public function iteration(Reader $reader, Collection $collection)
+    public function filePath()
     {
-        // Quest information
-        if ($reader->is('quest') and $iteration = $this->quest($reader)) {
-            $collection->push($iteration);
-        }
-
-        // Quest missions
-        if ($this->enabled('missions')) {
-            $quest = $collection->last();
-
-            // Mission information
-            if ($iteration = $this->mission($reader)) {
-                $quest->last()->push($iteration);
-            }
-
-            // Mission states
-            if ($this->enabled('states')) {
-                if ($iteration = $this->missionState($reader)) {
-                    $quest->get('missions')->last()->get('states')->put(
-                        $iteration->get('id'), $iteration->get('description')
-                    );
-                }
-            }
-        }
-
-        return $collection;
+        return '/data/XML/quests.xml';
     }
 
     /**
-     * Parse the quest information from the quests file.
+     * Get the parser engine.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
      */
-    protected function quest(Reader $reader)
+    public function engine(array $attributes)
     {
-        $attributes = $reader->attributes('name', 'startstorageid', 'startstoragevalue');
-
-        return new Collection(
-            $this->enabled('missions') ? array_merge($attributes, ['missions' => new Collection]) : $attributes
-        );
+        return new XML($attributes);
     }
 
     /**
-     * Parse the mission information from the quests file.
+     * Parse the file.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    protected function mission(Reader $reader)
+    public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        if (! $reader->is('mission')) {
-            return false;
-        }
-
-        $attributes = $reader->attributes('name', 'description', 'storageid', 'startvalue', 'endvalue', 'ignoreendvalue');
-
-        return new Collection(
-            $this->enabled('states') ? array_merge($attributes, ['states' => new Collection]) : $attributes
-        );
-    }
-
-    /**
-     * Parse the mission states from the quests file.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
-     */
-    protected function missionState(Reader $reader)
-    {
-        if (! ($reader->is('missionstate') and $reader->parent('mission'))) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('id', 'description')
-        );
+        return $output->first()->get('quest', new Collection);
     }
 }

@@ -2,43 +2,45 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use pandaac\Exporter\Parser;
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
-use pandaac\Exporter\Contracts\Reader;
+use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Commands extends Parser
+class Commands implements Contract
 {
-    /**
-     * Handle every iteration of the parsing process.
+    /** 
+     * Get the relative file path.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
-     * @return \Illuminate\Support\Collection
+     * @return string
      */
-    public function iteration(Reader $reader, Collection $collection)
+    public function filePath()
     {
-        // Command information
-        if ($iteration = $this->command($reader)) {
-            $collection->push($iteration);
-        }
-
-        return $collection;
+        return '/data/XML/commands.xml';
     }
 
     /**
-     * Parse the command information from the commands file.
+     * Get the parser engine.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
+     */
+    public function engine(array $attributes)
+    {
+        return new XML($attributes);
+    }
+
+    /**
+     * Parse the file.
+     *
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    protected function command(Reader $reader)
+    public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        if (! $reader->is('command')) {
-            return false;
-        }
-
-        return new Collection(
-            $reader->attributes('cmd', 'group', 'acctype', 'log')
-        );
+        return $output->first()->get('command', new Collection);
     }
 }

@@ -8,7 +8,7 @@ use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
 use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Mounts implements Contract
+class Raids implements Contract
 {
     /** 
      * Get the relative file path.
@@ -17,7 +17,7 @@ class Mounts implements Contract
      */
     public function filePath()
     {
-        return '/data/XML/mounts.xml';
+        return '/data/raids/raids.xml';
     }
 
     /**
@@ -41,6 +41,22 @@ class Mounts implements Contract
      */
     public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        return $output->first()->get('mount', new Collection);
+        $raids = $output->first()->get('raid', new Collection);
+
+        if (! isset($attributes['recursive']) or $attributes['recursive'] !== true) {
+            return $raids;
+        }
+
+        return $raids->each(function ($monster) use ($exporter) {
+            try {
+                if ($monster->has('file')) {
+                    $response = $exporter->parse(new Raid, [], $monster->get('file'));
+
+                    $monster->put('details', $response);
+                }
+            } catch (Exception $e) {
+                // 
+            }
+        });
     }
 }

@@ -2,103 +2,62 @@
 
 namespace pandaac\Exporter\Parsers;
 
-use pandaac\Exporter\Parser;
+use Exception;
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
-use pandaac\Exporter\Contracts\Reader;
+use pandaac\Exporter\Contracts\Parser as Contract;
 
-class Monsters extends Parser
+class Monsters implements Contract
 {
-    /**
-     * Holds all of the default options.
+    /** 
+     * Get the relative file path.
      *
-     * @var array
+     * @return string
      */
-    protected $options = [
-        'recursion' => false,
-    ];
-
-    /**
-     * Handle every iteration of the parsing process.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
-     * @return \Illuminate\Support\Collection
-     */
-    public function iteration(Reader $reader, Collection $collection)
+    public function filePath()
     {
-        if (! $reader->is('monster')) {
-            return $collection;
-        }
-
-        if (! ($reader->isElement() or $reader->isAttribute() or $reader->isComment())) {
-            return $collection;
-        }
-
-        // Monster information
-        if ($iteration = $this->information($reader)) {
-            $collection->push($iteration);
-        }
-
-        // Monster details
-        if ($this->enabled('recursion') and $iteration = $this->details($reader, $collection)) {
-            $monster = $collection->pop();
-
-            return $collection->push($iteration->put('paths', $monster));
-        }
-
-        return $collection;
+        return '/data/monster/monsters.xml';
     }
 
     /**
-     * Parse the basic information from the monster file.
+     * Get the parser engine.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return \Illuminate\Support\Collection
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
      */
-    protected function information(Reader $reader)
+    public function engine(array $attributes)
     {
-        $attributes = $reader->attributes('name', 'file');
-
-        return new Collection(
-            array_merge($attributes, [
-                'path' => realpath(dirname($this->file).'/'.$attributes['file']),
-            ])
-        );
+        return new XML($attributes);
     }
 
     /**
-     * Parse the detailed information from the monster file.
+     * Parse the file.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  \Illuminate\Support\Collection  $collection
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    protected function details(Reader $reader, Collection $collection)
+    public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        $monster = $collection->last();
+        $monsters = $output->first()->get('monster', new Collection);
 
-        if (! ($path = $monster->get('path'))) {
-            return false;
+        if (! isset($attributes['recursive']) or $attributes['recursive'] !== true) {
+            return $monsters;
         }
 
-        return $this->parseMonster($reader, $path);
-    }
+        return $monsters->each(function ($monster) use ($exporter) {
+            try {
+                if ($monster->has('file')) {
+                    $response = $exporter->parse(new Monster, [], $monster->get('file'));
 
-    /**
-     * Parse an invidiual monster file.
-     *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @param  string  $path
-     * @return \Illuminate\Support\Collection
-     */
-    private function parseMonster(Reader $reader, $path)
-    {
-        $parser = new Monster($this->options);
-
-        $readerClass = get_class($reader);
-
-        $parser->setReader(new $readerClass);
-
-        return $parser->parse($path);
+                    $monster->put('details', $response);
+                }
+            } catch (Exception $e) {
+                // 
+            }
+        });
     }
 }

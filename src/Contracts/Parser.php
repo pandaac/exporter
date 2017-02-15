@@ -2,36 +2,33 @@
 
 namespace pandaac\Exporter\Contracts;
 
+use pandaac\Exporter\Output;
+use pandaac\Exporter\Exporter;
+
 interface Parser
 {
-    /**
-     * Instantiate the parser object.
+    /** 
+     * Get the relative file path.
      *
-     * @param  array  $options  []
-     * @return void
+     * @return string
      */
-    public function __construct(array $options = []);
+    public function filePath();
 
     /**
-     * Return the reader implementation.
+     * Get the parser engine.
      *
-     * @return \pandaac\Exporter\Contracts\Reader
+     * @param  array  $attributes
+     * @return \pandaac\Exporter\Contracts\Engine
      */
-    public function getReader();
+    public function engine(array $attributes);
 
     /**
-     * Set the reader implementation.
+     * Parse the file.
      *
-     * @param  \pandaac\Exporter\Contracts\Reader  $reader
-     * @return void
-     */
-    public function setReader(Reader $reader);
-
-    /**
-     * Parse the specified file.
-     *
-     * @param  string  $file
+     * @param  \pandaac\Exporter\Exporter  $exporter
+     * @param  \pandaac\Exporter\Output  $output
+     * @param  array  $attributes
      * @return \Illuminate\Support\Collection
      */
-    public function parse($file);
+    public function parse(Exporter $exporter, Output $output, array $attributes);
 }
