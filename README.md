@@ -37,34 +37,50 @@ Parsers are what decides how to parse a certain file, and how to structure its r
 
 ##### XML Parsers
 + **Actions**  
+   > This parser has no attributes.  
+
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Actions);
    ```
 + **Chat Channels**  
+   > This parser has no attributes.  
+
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\ChatChannels);
    ```
 + **Commands**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Commands);
    ```
 + **Creature Scripts**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\CreatureScripts);
    ```
 + **Events**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Events);
    ```
 + **Global Events**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\GlobalEvents);
    ```
 + **Groups**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Groups);
    ```
 + **Items**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Items);
    ```
@@ -93,10 +109,14 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Monsters, [ 'recursive' => true ]);
    ```
 + **Mounts**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Mounts);
    ```
 + **Movements**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Movements);
    ```
@@ -107,10 +127,14 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\NPC, [], 'The Oracle.xml');
    ```
 + **Outfits**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Outfits);
    ```
 + **Quests**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Quests);
    ```
@@ -127,22 +151,32 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Raids, [ 'recursive' => true ]);
    ```
 + **Spells**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Spells);
    ```
 + **Stages**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Stages);
    ```
 + **TalkActions**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\TalkActions);
    ```
 + **Vocations**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Vocations);
    ```
 + **Weapons**  
+   > This parser has no attributes.  
+   
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Weapons);
    ```
