@@ -36,113 +36,113 @@ $response = $exporter->parse(new Parsers\Weapons);
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
 ##### XML Parsers
-+ **Actions**
++ **Actions**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Actions);
    ```
-+ **Chat Channels**
++ **Chat Channels**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\ChatChannels);
    ```
-+ **Commands**
++ **Commands**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Commands);
    ```
-+ **Creature Scripts**
++ **Creature Scripts**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\CreatureScripts);
    ```
-+ **Events**
++ **Events**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Events);
    ```
-+ **Global Events**
++ **Global Events**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\GlobalEvents);
    ```
-+ **Groups**
++ **Groups**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Groups);
    ```
-+ **Items**
++ **Items**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Items);
    ```
-+ **Map Houses**
-   You must specify the relative filename as the third argument.
++ **Map Houses**  
+   You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\MapHouses, [], 'forgotten-house.xml');
    ```
-+ **Map Spawns**
-   You must specify the relative filename as the third argument.
++ **Map Spawns**  
+   You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\MapSpawns, [], 'forgotten-spawn.xml');
    ```
-+ **Monster**
-   You must specify the relative filename as the third argument.
++ **Monster**  
+   You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Monster, [], 'Demons/Demon.xml');
    ```
-+ **Monsters**
-   You may also load the data from within each individual monster file by setting the `recursive` attribute to `true`.
++ **Monsters**  
+   You may also load the data from within each individual monster file by setting the `recursive` attribute to `true`.  
    
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Monsters, [ 'recursive' => true ]);
    ```
-+ **Mounts**
++ **Mounts**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Mounts);
    ```
-+ **Movements**
++ **Movements**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Movements);
    ```
-+ **NPC**
-   You must specify the relative filename as the third argument.
++ **NPC**  
+   You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\NPC, [], 'The Oracle.xml');
    ```
-+ **Outfits**
++ **Outfits**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Outfits);
    ```
-+ **Quests**
++ **Quests**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Quests);
    ```
-+ **Raid**
-   You must specify the relative filename as the third argument.
++ **Raid**  
+   You must specify the relative filename as the third argument.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Raid, [], 'testraid.xml');
    ```
-+ **Raids**
-   You may also load the data from within each individual raid file by setting the `recursive` attribute to `true`.
++ **Raids**  
+   You may also load the data from within each individual raid file by setting the `recursive` attribute to `true`.  
 
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Raids, [ 'recursive' => true ]);
    ```
-+ **Spells**
++ **Spells**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Spells);
    ```
-+ **Stages**
++ **Stages**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Stages);
    ```
-+ **TalkActions**
++ **TalkActions**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\TalkActions);
    ```
-+ **Vocations**
++ **Vocations**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Vocations);
    ```
-+ **Weapons**
++ **Weapons**  
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Weapons);
    ```
