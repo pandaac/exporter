@@ -138,7 +138,6 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    ```
 
 + **Quests**  
-   > This parser has no attributes.  
    
    ```php
    $exporter->parse(new \pandaac\Exporter\Parsers\Quests);
