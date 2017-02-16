@@ -13,11 +13,8 @@
     "require": {
         "php": ">=5.6.4",
         "ext-libxml": "*",
-        "illuminate/support": "~5.4",
+        "tightenco/collect": "~5.4",
         "mdurrant/php-binary-reader": "~1.0"
-    },
-    "require-dev": {
-        "symfony/var-dumper": "~3.2"
     },
     "autoload": {
         "psr-4": {
