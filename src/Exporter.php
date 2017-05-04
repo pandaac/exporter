@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 use pandaac\Exporter\Contracts\Engine;
 use pandaac\Exporter\Contracts\Parser;
+use pandaac\Exporter\Contracts\Source;
 
 class Exporter
 {
@@ -25,11 +26,11 @@ class Exporter
     const ISSUES = 'https://github.com/pandaac/exporter/issues';
 
     /**
-     * Holds the root directory.
+     * Holds the source.
      *
-     * @var string
+     * @var \pandaac\Exporter\Contracts\Source|string
      */
-    protected $directory;
+    protected $source;
 
     /**
      * Holds the output implementation.
@@ -41,12 +42,14 @@ class Exporter
     /**
      * Instantiate a new exporter object.
      *
-     * @param  string  $directory
+     * @param  \pandaac\Exporter\Contracts\Source|string  $source
      * @return void
      */
-    public function __construct($directory)
+    public function __construct($source)
     {
-        if (! file_exists($this->directory = $directory)) {
+        $this->source = $source;
+
+        if (! $source instanceof Source and ! file_exists($source)) {
             throw new InvalidArgumentException('The first argument must be a valid directory.');
         }
     }
@@ -56,17 +59,21 @@ class Exporter
      *
      * @param  string  $path
      * @param  string  $custom  null
-     * @return string
+     * @return \pandaac\Exporter\Contracts\Source|string
      */
     public function getAbsolutePath($path, $custom = null)
     {
+        if ($this->source instanceof Source) {
+            return $this->source;
+        }
+
         $path = ltrim($path, DIRECTORY_SEPARATOR);
 
         if (substr($path, -1, 1) === DIRECTORY_SEPARATOR) {
             $custom = $path.$custom;
         }
 
-        return $this->directory.DIRECTORY_SEPARATOR.($custom ?: $path);
+        return $this->source.DIRECTORY_SEPARATOR.($custom ?: $path);
     }
 
     /**

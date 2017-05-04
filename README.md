@@ -187,6 +187,21 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    $exporter->parse(new \pandaac\Exporter\Parsers\Weapons);
    ```
 
++ **XMLSource**  
+   If you have a string containing XML, you may also parse that using the following setup.
+
+   ```php
+   use pandaac\Exporter\Parsers;
+   use pandaac\Exporter\Exporter;
+   use pandaac\Exporter\Sources\StringContent;
+
+   $exporter = new Exporter(
+       new StringContent('<?xml version="1.0" encoding="UTF-8"?><custom></custom>')
+   );
+
+   $response = $exporter->parse(new Parsers\XMLSource);
+   ```
+
 ### OTBM Parsers
 > The OTBM engine has not yet been developed, and thus the following parsers are rendered obsolete for the time being.
 

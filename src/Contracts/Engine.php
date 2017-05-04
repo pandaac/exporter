@@ -5,31 +5,31 @@ namespace pandaac\Exporter\Contracts;
 interface Engine
 {
     /**
-     * Open a file resource.
+     * Open a source resource.
      *
-     * @param  string  $file
+     * @param  \pandaac\Exporter\Contracts\Source|string  $source
      * @return void
      */
-    public function open($file);
+    public function open($source);
 
     /**
-     * Read and parse the file.
+     * Read and parse the source.
      *
      * @return \pandaac\Exporter\Output
      */
     public function output();
 
     /**
-     * Close the opened file resource.
+     * Close the opened source resource.
      *
      * @return void
      */
     public function close();
 
     /**
-     * Get the absolute file path.
+     * Get the source data or path.
      *
      * @return string
      */
-    public function getFile();
+    public function getSource();
 }

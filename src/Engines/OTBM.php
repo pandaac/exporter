@@ -8,18 +8,18 @@ use pandaac\Exporter\Contracts\Engine as Contract;
 class OTBM implements Contract
 {
     /**
-     * Open a file resource.
+     * Open a source resource.
      *
-     * @param  string  $file
+     * @param  \pandaac\Exporter\Contracts\Source|string  $source
      * @return void
      */
-    public function open($file)
+    public function open($source)
     {
         throw new Exception('The OTBM engine has not yet been developed.');
     }
 
     /**
-     * Read and parse the file.
+     * Read and parse the source.
      *
      * @return \pandaac\Exporter\Output
      */
@@ -29,7 +29,7 @@ class OTBM implements Contract
     }
 
     /**
-     * Close the opened file resource.
+     * Close the opened source resource.
      *
      * @return void
      */
@@ -39,11 +39,11 @@ class OTBM implements Contract
     }
 
     /**
-     * Get the absolute file path.
+     * Get the source data or path.
      *
-     * @return string
+     * @return \pandaac\Exporter\Contracts\Source|string
      */
-    public function getFile()
+    public function getSource()
     {
         //
     }

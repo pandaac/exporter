@@ -8,16 +8,17 @@ use pandaac\Exporter\Output;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use Illuminate\Support\Collection;
+use pandaac\Exporter\Contracts\Source;
 use pandaac\Exporter\Contracts\Engine as Contract;
 
 class XML implements Contract
 {
     /**
-     * Holds the file path.
+     * Holds the source.
      *
-     * @var string
+     * @var \pandaac\Exporter\Contracts\Source|string
      */
-    protected $file;
+    protected $source;
 
     /**
      * Holds the reader implementation.
@@ -111,20 +112,16 @@ class XML implements Contract
     }
 
     /**
-     * Open a file resource.
+     * Open a source resource.
      *
-     * @param  string  $file
+     * @param  \pandaac\Exporter\Contracts\Source|string  $source
      * @return void
      */
-    public function open($file)
+    public function open($source)
     {
-        if (! is_file($this->file = $file)) {
-            throw new InvalidArgumentException('The first argument must be a valid file.');
-        }
+        $this->source = $source;
 
-        if (! $this->reader->open($file, null, LIBXML_NOWARNING | LIBXML_NOERROR)) {
-            throw new UnexpectedValueException('Unable to open source data.');
-        }
+        ($source instanceof Source) ? $this->openSource($source) : $this->openFile($source);
 
         $this->reader->setParserProperty(XMLReader::VALIDATE, true);
 
@@ -136,7 +133,38 @@ class XML implements Contract
     }
 
     /**
-     * Read and parse the file.
+     * Open a source resource.
+     *
+     * @param  \pandaac\Exporter\Contracts\Source  $source
+     * @return void
+     */
+    protected function openSource(Source $source)
+    {
+        if (! $this->reader->xml($source->content(), null, LIBXML_NOWARNING | LIBXML_NOERROR)) {
+            throw new UnexpectedValueException('Unable to open source data.');
+        }
+    }
+
+    /**
+     * Open a file resource.
+     *
+     * @param  string  $source
+     * @return void
+     */
+    protected function openFile($source)
+    {
+        dump($source);
+        if (! is_file($source)) {
+            throw new InvalidArgumentException('The first argument must be a valid file.');
+        }
+
+        if (! $this->reader->open($source, null, LIBXML_NOWARNING | LIBXML_NOERROR)) {
+            throw new UnexpectedValueException('Unable to open file.');
+        }
+    }
+
+    /**
+     * Read and parse the source.
      *
      * @return \pandaac\Exporter\Output
      */
@@ -156,7 +184,7 @@ class XML implements Contract
     }
 
     /**
-     * Close the opened file resource.
+     * Close the opened source resource.
      *
      * @return void
      */
@@ -166,13 +194,13 @@ class XML implements Contract
     }
 
     /**
-     * Get the absolute file path.
+     * Get the source data or path.
      *
-     * @return string
+     * @return \pandaac\Exporter\Contracts\Source|string
      */
-    public function getFile()
+    public function getSource()
     {
-        return $this->file;
+        return $this->source;
     }
 
     /**
