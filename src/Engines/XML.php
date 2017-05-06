@@ -153,7 +153,6 @@ class XML implements Contract
      */
     protected function openFile($source)
     {
-        dump($source);
         if (! is_file($source)) {
             throw new InvalidArgumentException('The first argument must be a valid file.');
         }
