@@ -26,11 +26,11 @@ class Exporter
     const ISSUES = 'https://github.com/pandaac/exporter/issues';
 
     /**
-     * Holds the source.
+     * Holds the directory path.
      *
-     * @var \pandaac\Exporter\Contracts\Source|string
+     * @var string
      */
-    protected $source;
+    protected $directory;
 
     /**
      * Holds the output implementation.
@@ -42,14 +42,14 @@ class Exporter
     /**
      * Instantiate a new exporter object.
      *
-     * @param  \pandaac\Exporter\Contracts\Source|string  $source
+     * @param  string  $directory
      * @return void
      */
-    public function __construct($source)
+    public function __construct($directory)
     {
-        $this->source = $source;
+        $this->directory = $directory;
 
-        if (! $source instanceof Source and ! file_exists($source)) {
+        if (! file_exists($directory)) {
             throw new InvalidArgumentException('The first argument must be a valid directory.');
         }
     }
@@ -57,23 +57,23 @@ class Exporter
     /**
      * Get the absolute file path.
      *
-     * @param  string  $path
-     * @param  string  $custom  null
+     * @param  \pandaac\Exporter\Contracts\Source|string  $source
+     * @param  string  $file  null
      * @return \pandaac\Exporter\Contracts\Source|string
      */
-    public function getAbsolutePath($path, $custom = null)
+    public function getAbsolutePath($source, $file = null)
     {
-        if ($this->source instanceof Source) {
-            return $this->source;
+        if ($source instanceof Source) {
+            return $source;
         }
 
-        $path = ltrim($path, DIRECTORY_SEPARATOR);
+        $source = ltrim($source, DIRECTORY_SEPARATOR);
 
-        if (substr($path, -1, 1) === DIRECTORY_SEPARATOR) {
-            $custom = $path.$custom;
+        if (substr($source, -1, 1) === DIRECTORY_SEPARATOR) {
+            $file = $source.$file;
         }
 
-        return $this->source.DIRECTORY_SEPARATOR.($custom ?: $path);
+        return $this->directory.DIRECTORY_SEPARATOR.($file ?: $source);
     }
 
     /**

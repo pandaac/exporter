@@ -6,18 +6,29 @@ use pandaac\Exporter\Output;
 use pandaac\Exporter\Exporter;
 use pandaac\Exporter\Engines\XML;
 use Illuminate\Support\Collection;
+use pandaac\Exporter\Contracts\Source;
 use pandaac\Exporter\Contracts\Parser as Contract;
 
 class XMLSource implements Contract
 {
+    /**
+     * Instantiate a new XML Source parser.
+     *
+     * @param  \pandaac\Exporter\Contracts\Source  $source
+     */
+    public function __construct(Source $source)
+    {
+        $this->source = $source;
+    }
+
     /** 
      * Get the relative file path.
      *
-     * @return string
+     * @return \pandaac\Exporter\Contracts\Source
      */
     public function filePath()
     {
-        return null;
+        return $this->source;
     }
 
     /**
@@ -41,6 +52,6 @@ class XMLSource implements Contract
      */
     public function parse(Exporter $exporter, Output $output, array $attributes)
     {
-        return $output->all();
+        return $output;
     }
 }

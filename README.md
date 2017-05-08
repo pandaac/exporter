@@ -196,15 +196,12 @@ Parsers are what decides how to parse a certain file, and how to structure its r
    If you have a string containing XML, you may also parse that using the following setup.
 
    ```php
-   use pandaac\Exporter\Parsers;
-   use pandaac\Exporter\Exporter;
+   use pandaac\Exporter\Parsers\XMLSource;
    use pandaac\Exporter\Sources\StringContent;
 
-   $exporter = new Exporter(
-       new StringContent('<?xml version="1.0" encoding="UTF-8"?><custom></custom>')
-   );
-
-   $response = $exporter->parse(new Parsers\XMLSource);
+   $exporter->parse(new XMLSource(
+       new StringContent('<online><player id="1" /><player id="2" /></online>')
+   ));
    ```
 
 ### OTBM Parsers
