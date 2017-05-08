@@ -42,7 +42,7 @@ Optionally, you may pass through engine specific settings as the second argument
 $exporter = new Exporter('/home/pandaac/theforgottenserver', $settings);
 ```
 
-Available settings are as follows:
+Available settings are as follows _(the selected values are the default values)_:
 
 ```php
 $settings = [
@@ -50,12 +50,12 @@ $settings = [
         // The XML engine will automatically validate any file it tries to parse,
         // and if the data is invalid, an exception will be thrown. You may
         // disable this behaviour by setting `validate` to `false`.
-        'validate' => false,
+        'validate' => true,
 
         // The XML engine will not throw exceptions on missing files when
         // parsing through a recursive structure. You may enable this
         // behaviour by setting `strict` to `true`.
-        'strict' => true,
+        'strict' => false,
     ],
 ]
 ```
