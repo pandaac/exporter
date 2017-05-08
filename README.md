@@ -37,6 +37,9 @@ try {
 }
 ```
 
+## Response
+Each parser returns an [Illuminate Collection](https://laravel.com/docs/5.4/collections) object. Please refer to the Laravel documentation for details on how to utilise it.
+
 ## Parsers
 Parsers are what decides how to parse a certain file, and how to structure its response. It is important you use the correct parser for the correct file.
 
