@@ -48,14 +48,10 @@ class Raids implements Contract
         }
 
         return $raids->each(function ($monster) use ($exporter) {
-            try {
-                if ($monster->has('file')) {
-                    $response = $exporter->parse(new Raid, [], $monster->get('file'));
+            if ($monster->has('file')) {
+                $response = $exporter->parse(new Raid, [], $monster->get('file'));
 
-                    $monster->put('details', $response);
-                }
-            } catch (Exception $e) {
-                // 
+                $monster->put('details', $response);
             }
         });
     }

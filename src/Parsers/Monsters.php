@@ -49,14 +49,10 @@ class Monsters implements Contract
         }
 
         return $monsters->each(function ($monster) use ($exporter) {
-            try {
-                if ($monster->has('file')) {
-                    $response = $exporter->parse(new Monster, [], $monster->get('file'));
+            if ($monster->has('file')) {
+                $response = $exporter->parse(new Monster, [], $monster->get('file'));
 
-                    $monster->put('details', $response);
-                }
-            } catch (Exception $e) {
-                // 
+                $monster->put('details', $response);
             }
         });
     }

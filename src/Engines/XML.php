@@ -4,6 +4,7 @@ namespace pandaac\Exporter\Engines;
 
 use Exception;
 use XMLReader;
+use ErrorException;
 use pandaac\Exporter\Output;
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -119,9 +120,11 @@ class XML implements Contract
      */
     public function open($source)
     {
+        libxml_use_internal_errors(true);
+
         $this->source = $source;
 
-        ($source instanceof Source) ? $this->openSource($source) : $this->openFile($source);
+        $document = $source instanceof Source ? $this->openSource($source) : $this->openFile($source);
 
         $this->reader->setParserProperty(XMLReader::VALIDATE, true);
 
@@ -140,9 +143,7 @@ class XML implements Contract
      */
     protected function openSource(Source $source)
     {
-        if (! $this->reader->xml($source->content(), null, LIBXML_NOWARNING | LIBXML_NOERROR)) {
-            throw new UnexpectedValueException('Unable to open source data.');
-        }
+        return $this->reader->xml($source->content(), null);
     }
 
     /**
@@ -157,9 +158,7 @@ class XML implements Contract
             throw new InvalidArgumentException('The first argument must be a valid file.');
         }
 
-        if (! $this->reader->open($source, null, LIBXML_NOWARNING | LIBXML_NOERROR)) {
-            throw new UnexpectedValueException('Unable to open file.');
-        }
+        return $this->reader->open($source, null);
     }
 
     /**
@@ -177,6 +176,12 @@ class XML implements Contract
             $this->stopVirtualElement();
         }
 
+        if (libxml_get_last_error() !== false) {
+            $error = libxml_get_last_error();
+
+            throw new ErrorException($error->message, $error->code, $error->level, $error->file, $error->line);
+        }
+
         unset($this->references);
 
         return new Output($this->elements);
@@ -189,6 +194,8 @@ class XML implements Contract
      */
     public function close()
     {
+        libxml_clear_errors();
+
         $this->reader->close();
     }
 
