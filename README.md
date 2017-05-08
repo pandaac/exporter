@@ -22,14 +22,19 @@ Pass the absolute path to your Open Tibia server as the first argument of the `E
 The `parse` method also accepts a second argument for additional attributes (depends on the parser), and a third argument for overriding the default filepath (or providing a specific parser with a filepath).
 
 ```php
+use Exception;
 use pandaac\Exporter\Parsers;
 use pandaac\Exporter\Exporter;
 
-$exporter = new Exporter(
-    '/home/pandaac/theforgottenserver'
-);
+try {
+    $exporter = new Exporter(
+        '/home/pandaac/theforgottenserver'
+    );
 
-$response = $exporter->parse(new Parsers\Weapons);
+    $response = $exporter->parse(new Parsers\Weapons);
+} catch (Exception $e) {
+    // Handle exceptions as you see fit...
+}
 ```
 
 ## Parsers
