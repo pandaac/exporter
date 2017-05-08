@@ -22,12 +22,13 @@ class Stages implements Contract
     /**
      * Get the parser engine.
      *
+     * @param  \pandaac\Exporter\Exporter  $exporter
      * @param  array  $attributes
      * @return \pandaac\Exporter\Contracts\Engine
      */
-    public function engine(array $attributes)
+    public function engine(Exporter $exporter, array $attributes)
     {
-        return new XML($attributes);
+        return new XML($exporter, $attributes);
     }
 
     /**

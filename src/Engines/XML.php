@@ -8,12 +8,20 @@ use ErrorException;
 use pandaac\Exporter\Output;
 use InvalidArgumentException;
 use UnexpectedValueException;
+use pandaac\Exporter\Exporter;
 use Illuminate\Support\Collection;
 use pandaac\Exporter\Contracts\Source;
 use pandaac\Exporter\Contracts\Engine as Contract;
 
 class XML implements Contract
 {
+    /**
+     * Holds the Exporter implementation.
+     *
+     * @var \pandaac\Exporter\Exporter
+     */
+    protected $exporter;
+
     /**
      * Holds the source.
      *
@@ -99,12 +107,14 @@ class XML implements Contract
     /**
      * Instantiate the engine object.
      *
+     * @param  \pandaac\Exporter\Exporter  $exporter
      * @param  array  $attributes  []
      * @param  array  $plural  []
      * @return void
      */
-    public function __construct(array $attributes = [], array $plural = [])
+    public function __construct(Exporter $exporter, array $attributes = [], array $plural = [])
     {
+        $this->exporter = $exporter;
         $this->attributes = $attributes;
         $this->plural = $plural;
 
@@ -124,12 +134,16 @@ class XML implements Contract
 
         $this->source = $source;
 
-        $document = $source instanceof Source ? $this->openSource($source) : $this->openFile($source);
+        if (! ($source instanceof Source ? $this->openSource($source) : $this->openFile($source))) {
+            return false;
+        }
 
         $this->reader->setParserProperty(XMLReader::VALIDATE, true);
 
         if (! $this->reader->isValid()) {
-            throw new UnexpectedValueException('The source data is not valid.');
+            $this->triggerException(
+                new UnexpectedValueException('The source data is not valid.')
+            );
         }
 
         $this->reader->setParserProperty(XMLReader::VALIDATE, false);
@@ -155,7 +169,11 @@ class XML implements Contract
     protected function openFile($source)
     {
         if (! is_file($source)) {
-            throw new InvalidArgumentException('The first argument must be a valid file.');
+            if ($this->exporter->setting('xml.strict', false)) {
+                throw new InvalidArgumentException(sprintf('%s could not be found.', $source));
+            }
+
+            return;
         }
 
         return $this->reader->open($source, null);
@@ -179,7 +197,9 @@ class XML implements Contract
         if (libxml_get_last_error() !== false) {
             $error = libxml_get_last_error();
 
-            throw new ErrorException($error->message, $error->code, $error->level, $error->file, $error->line);
+            $this->triggerException(
+                new ErrorException($error->message, $error->code, $error->level, $error->file, $error->line)
+            );
         }
 
         unset($this->references);
@@ -366,5 +386,20 @@ class XML implements Contract
         }
 
         return 'read'.$this->nodes[$node].'Node';
+    }
+
+    /**
+     * Throw an exception, unless it's being suppressed.
+     *
+     * @param  \Exception  $e
+     * @return void
+     */
+    protected function triggerException(Exception $e)
+    {
+        if (! $this->exporter->setting('xml.validate', true)) {
+            return;
+        }
+
+        return $this->exporter->triggerException($e);
     }
 }

@@ -17,10 +17,11 @@ interface Parser
     /**
      * Get the parser engine.
      *
+     * @param  \pandaac\Exporter\Exporter  $exporter
      * @param  array  $attributes
      * @return \pandaac\Exporter\Contracts\Engine
      */
-    public function engine(array $attributes);
+    public function engine(Exporter $exporter, array $attributes);
 
     /**
      * Parse the file.

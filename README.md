@@ -27,14 +27,37 @@ use pandaac\Exporter\Parsers;
 use pandaac\Exporter\Exporter;
 
 try {
-    $exporter = new Exporter(
-        '/home/pandaac/theforgottenserver'
-    );
+    $exporter = new Exporter('/home/pandaac/theforgottenserver');
 
     $response = $exporter->parse(new Parsers\Weapons);
 } catch (Exception $e) {
     // Handle exceptions as you see fit...
 }
+```
+
+##### Settings
+Optionally, you may pass through engine specific settings as the second argument of the `\pandaac\Exporter\Exporter` object.
+
+```php
+$exporter = new Exporter('/home/pandaac/theforgottenserver', $settings);
+```
+
+Available settings are as follows:
+
+```php
+$settings = [
+    'xml' => [
+        // The XML engine will automatically validate any file it tries to parse,
+        // and if the data is invalid, an exception will be thrown. You may
+        // disable this behaviour by setting `validate` to `false`.
+        'validate' => false,
+
+        // The XML engine will not throw exceptions on missing files when
+        // parsing through a recursive structure. You may enable this
+        // behaviour by setting `strict` to `true`.
+        'strict' => true,
+    ],
+]
 ```
 
 ## Response

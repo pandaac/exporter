@@ -3,6 +3,7 @@
 namespace pandaac\Exporter\Engines;
 
 use Exception;
+use pandaac\Exporter\Exporter;
 use pandaac\Exporter\Contracts\Engine as Contract;
 
 class OTBM implements Contract
