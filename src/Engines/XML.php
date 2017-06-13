@@ -256,6 +256,22 @@ class XML implements Contract
     }
 
     /**
+     * Read an end element node.
+     *
+     * @return void
+     */
+    protected function readCdataNode()
+    {
+        $value = preg_replace('/\\r?\\n(\s+)/', PHP_EOL, $this->reader->value);
+
+        $value = trim($value, PHP_EOL);
+
+        $key = $this->element->has('value') ? 'cdata' : 'value';
+
+        $this->element->put($key, $value);
+    }
+
+    /**
      * Read the attributes on an element node.
      *
      * @return \Illuminate\Support\Collection
